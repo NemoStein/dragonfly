@@ -4,6 +4,7 @@ package nemostein.framework.dragonfly
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import nemostein.io.Input;
 	
 	/**
 	 * The highest (and most abstract) class that can be used in the framework
@@ -14,22 +15,32 @@ package nemostein.framework.dragonfly
 		/**
 		 * [read-only] The time (in ms) of the current frame
 		 */
-		protected static var now:int;
+		static protected var now:int;
 		
 		/**
 		 * [read-only] The time (in ms) that passed between the current frame and the last one
 		 */
-		protected static var early:int;
+		static protected var early:int;
 		
 		/**
 		 * [read-only] The time (in ms) of the last frame
 		 */
-		protected static var elapsed:int;
+		static protected var elapsed:int;
+		
+		/**
+		 * [read-only] The time (in s) of the last frame
+		 */
+		static protected var time:Number;
 		
 		/**
 		 * [read-only] The canvas where the current object will be drawn
 		 */
-		protected static var canvas:BitmapData;
+		static protected var canvas:BitmapData;
+		
+		/**
+		 * [read-only] The global input
+		 */
+		static protected var input:Input;
 		
 		/**
 		 * The sprite of the current object that will be drawn on cavas
@@ -93,10 +104,29 @@ package nemostein.framework.dragonfly
 		
 		public function Core(contents:BitmapData = null)
 		{
+			create();
+			
 			if (contents)
 			{
 				draw(contents, true);
 			}
+		}
+		
+		/**
+		 * Creates the Core object with essential values
+		 */
+		private function create():void 
+		{
+			active = true;
+			visible = true;
+			
+			_children = new <Core>[];
+			
+			frame = new Rectangle();
+			achor = new Point();
+			position = new Point();
+			canvasPosition = new Point();
+			rotation = 0;
 			
 			initialize();
 		}
@@ -108,21 +138,7 @@ package nemostein.framework.dragonfly
 		 */
 		protected function initialize():void
 		{
-			active = true;
-			visible = true;
 			
-			_children = new <Core>[];
-			
-			if (!frame)
-			{
-				frame = new Rectangle();
-			}
-			achor = new Point();
-			position = new Point();
-			canvasPosition = new Point();
-			rotation = 0;
-		
-			//sprite = new BitmapData(1, 1, true, 0);
 		}
 		
 		/**
@@ -191,7 +207,12 @@ package nemostein.framework.dragonfly
 			
 			if (useSize)
 			{
-				frame = data.rect.clone();
+				var rectangle:Rectangle = data.rect;
+				
+				frame.x = rectangle.x;
+				frame.y = rectangle.y;
+				frame.width = rectangle.width;
+				frame.height = rectangle.height;
 			}
 		}
 		

@@ -4,7 +4,6 @@ package nemostein.framework.dragonfly
 	import flash.display.BitmapData;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
-	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
@@ -33,8 +32,6 @@ package nemostein.framework.dragonfly
 		private var _width:int;
 		private var _height:int;
 		private var _color:uint;
-		
-		private var _input:Input;
 		
 		public function Game(width:int, height:int, color:uint = 0xffdadfef)
 		{
@@ -75,7 +72,7 @@ package nemostein.framework.dragonfly
 				Game.stage = stage;
 				_started = false;
 				
-				_input = new Input(stage);
+				input = new Input(stage);
 				
 				stage.addEventListener(Event.ENTER_FRAME, onStageEnterFrame);
 				stage.addEventListener(Event.DEACTIVATE, onStageDeactivate);
@@ -110,6 +107,7 @@ package nemostein.framework.dragonfly
 		{
 			now = getTimer();
 			elapsed = now - early;
+			time = elapsed / 1000;
 			early = now;
 			
 			if (!_started)
@@ -124,6 +122,8 @@ package nemostein.framework.dragonfly
 					update();
 					render();
 				}
+				
+				input.update();
 			}
 			
 			if (_showFps)
