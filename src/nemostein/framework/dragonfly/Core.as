@@ -53,19 +53,14 @@ package nemostein.framework.dragonfly
 		protected var frame:Rectangle;
 		
 		/**
-		 * The achor point (offset) of the current object
+		 * The anchor point (offset) of the current object
 		 */
-		protected var achor:Point;
+		protected var anchor:Point;
 		
 		/**
 		 * The position of the current object relative to it's parent
 		 */
 		protected var position:Point;
-		
-		/**
-		 * The position of the current object in the canvas
-		 */
-		protected var canvasPosition:Point;
 		
 		/**
 		 * The angle (z-axis) that the current object is looking to
@@ -93,14 +88,11 @@ package nemostein.framework.dragonfly
 		 */
 		public var relative:Boolean;
 		
-		/**
-		 * Tells if the children of the current object have a relative position and rotation or not
-		 */
-		public var relativeChildren:Boolean;
-		
 		private var _parent:Core;
+		private var _canvasPosition:Point;
 		private var _children:Vector.<Core>; // TODO: Use a linked list
 		private var _childrenCount:int;
+		private var _relativeChildren:Boolean;
 		
 		public function Core(contents:BitmapData = null)
 		{
@@ -115,7 +107,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Creates the Core object with essential values
 		 */
-		private function create():void 
+		private function create():void
 		{
 			active = true;
 			visible = true;
@@ -123,9 +115,9 @@ package nemostein.framework.dragonfly
 			_children = new <Core>[];
 			
 			frame = new Rectangle();
-			achor = new Point();
+			anchor = new Point();
 			position = new Point();
-			canvasPosition = new Point();
+			_canvasPosition = new Point();
 			rotation = 0;
 			
 			initialize();
@@ -138,7 +130,7 @@ package nemostein.framework.dragonfly
 		 */
 		protected function initialize():void
 		{
-			
+		
 		}
 		
 		/**
@@ -151,6 +143,12 @@ package nemostein.framework.dragonfly
 			child._parent = this;
 			_children.push(child);
 			++_childrenCount;
+			
+			if (_relativeChildren)
+			{
+				child.relative = true;
+				child.setCurrentDescendentsAsRelative();
+			}
 		}
 		
 		/**
@@ -257,8 +255,8 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
-		 * Change the achor point alignment of the current object
-		 * 
+		 * Change the anchor point alignment of the current object
+		 *
 		 * @param	horizontal
 		 * @param	vertical
 		 * @param	toX
@@ -268,36 +266,36 @@ package nemostein.framework.dragonfly
 		{
 			if (horizontal == AnchorAlign.LEFT)
 			{
-				achor.x = 0;
+				anchor.x = 0;
 			}
 			else if (horizontal == AnchorAlign.CENTER)
 			{
-				achor.x = frame.width / 2;
+				anchor.x = frame.width / 2;
 			}
 			else if (horizontal == AnchorAlign.RIGHT)
 			{
-				achor.x = frame.width;
+				anchor.x = frame.width;
 			}
 			else if (horizontal == AnchorAlign.CUSTOM)
 			{
-				achor.x = toX;
+				anchor.x = toX;
 			}
 			
 			if (vertical == AnchorAlign.TOP)
 			{
-				achor.y = 0;
+				anchor.y = 0;
 			}
 			else if (vertical == AnchorAlign.CENTER)
 			{
-				achor.y = frame.height / 2;
+				anchor.y = frame.height / 2;
 			}
 			else if (vertical == AnchorAlign.BOTTOM)
 			{
-				achor.y = frame.height;
+				anchor.y = frame.height;
 			}
 			else if (vertical == AnchorAlign.CUSTOM)
 			{
-				achor.y = toY;
+				anchor.y = toY;
 			}
 		}
 		
@@ -310,17 +308,6 @@ package nemostein.framework.dragonfly
 		 */
 		protected function update():void
 		{
-			if (parent && (relative || parent.relativeChildren))
-			{
-				canvasPosition.x = position.x + parent.canvasPosition.x - achor.x;
-				canvasPosition.y = position.y + parent.canvasPosition.y - achor.y;
-			}
-			else
-			{
-				canvasPosition.x = position.x - achor.x;
-				canvasPosition.y = position.y - achor.y;
-			}
-			
 			for (var i:int = 0; i < _childrenCount; ++i)
 			{
 				var child:Core = _children[i];
@@ -340,6 +327,17 @@ package nemostein.framework.dragonfly
 		 */
 		protected function render():void
 		{
+			if (parent && relative)
+			{
+				_canvasPosition.x = position.x + parent._canvasPosition.x - anchor.x;
+				_canvasPosition.y = position.y + parent._canvasPosition.y - anchor.y;
+			}
+			else
+			{
+				_canvasPosition.x = position.x - anchor.x;
+				_canvasPosition.y = position.y - anchor.y;
+			}
+			
 			if (sprite && frame)
 			{
 				if (rotation != 0)
@@ -351,13 +349,13 @@ package nemostein.framework.dragonfly
 					
 					matrix.translate(-halfWidth, -halfHeight);
 					matrix.rotate(rotation);
-					matrix.translate(canvasPosition.x + halfWidth, canvasPosition.y + halfHeight);
+					matrix.translate(_canvasPosition.x + halfWidth, _canvasPosition.y + halfHeight);
 					
 					canvas.draw(sprite, matrix, null, null, null, true);
 				}
 				else
 				{
-					canvas.copyPixels(sprite, frame, canvasPosition, null, null, true);
+					canvas.copyPixels(sprite, frame, _canvasPosition, null, null, true);
 				}
 			}
 			
@@ -368,6 +366,22 @@ package nemostein.framework.dragonfly
 				{
 					child.render();
 				}
+			}
+		}
+		
+		/**
+		 * Sets all descendents as relatives to their parents
+		 */
+		protected function setCurrentDescendentsAsRelative():void 
+		{
+			_relativeChildren = true;
+			
+			for (var i:int = 0; i < _childrenCount; ++i)
+			{
+				var child:Core = _children[i];
+				
+				child.relative = true;
+				child.setCurrentDescendentsAsRelative();
 			}
 		}
 		
