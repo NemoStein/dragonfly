@@ -1,6 +1,7 @@
 package nemostein.framework.dragonfly
 {
 	import flash.display.BitmapData;
+	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -63,9 +64,19 @@ package nemostein.framework.dragonfly
 		protected var position:Point;
 		
 		/**
-		 * The angle (z-axis) that the current object is looking to
+		 * The rotation ngle (z-axis) that the current object is looking to
 		 */
 		protected var rotation:Number;
+		
+		/**
+		 * The horizontal scale of the current object
+		 */
+		protected var scale:Point;
+		
+		/**
+		 * The opacity of the current object
+		 */
+		protected var opacity:Number;
 		
 		/**
 		 * The id of the current object
@@ -93,6 +104,8 @@ package nemostein.framework.dragonfly
 		private var _children:Vector.<Core>; // TODO: Use a linked list
 		private var _childrenCount:int;
 		private var _relativeChildren:Boolean;
+		private var _animations:Vector.<Animation>;
+		private var _animation:Animation;
 		
 		public function Core(contents:BitmapData = null)
 		{
@@ -100,7 +113,7 @@ package nemostein.framework.dragonfly
 			
 			if (contents)
 			{
-				draw(contents, true);
+				draw(contents);
 			}
 		}
 		
@@ -118,7 +131,11 @@ package nemostein.framework.dragonfly
 			anchor = new Point();
 			position = new Point();
 			_canvasPosition = new Point();
+			_animations = new Vector.<Animation>();
+			
 			rotation = 0;
+			scale = new Point(1, 1);
+			opacity = 1;
 			
 			initialize();
 		}
@@ -199,11 +216,11 @@ package nemostein.framework.dragonfly
 		/**
 		 * Draws a BitmapData into the sprite
 		 */
-		public function draw(data:BitmapData, useSize:Boolean = false):void
+		public function draw(data:BitmapData, keepSize:Boolean = false):void
 		{
 			sprite = data.clone();
 			
-			if (useSize)
+			if (!keepSize)
 			{
 				var rectangle:Rectangle = data.rect;
 				
@@ -255,14 +272,60 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
+		 * Calls hide() and deactivate() in the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function die():void
+		{
+			hide();
+			deactivate();
+		}
+		
+		/**
+		 * Calls show() and activate() in the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function revive():void
+		{
+			show();
+			activate();
+		}
+		
+		/**
+		 * Attach a new animation to the current object
+		 */
+		public function addAnimation(animation:Animation):void
+		{
+			_animations.push(animation);
+		}
+		
+		/**
+		 * Plays a previously attached animation
+		 */
+		public function playAnimation(id:String):void
+		{
+			for each (var animation:Animation in _animations)
+			{
+				if (animation.id == id)
+				{
+					animation.frameIndex = -1;
+					animation.frameTime = 0;
+					
+					_animation = animation;
+				}
+			}
+		}
+		
+		/**
 		 * Change the anchor point alignment of the current object
 		 *
 		 * @param	horizontal
 		 * @param	vertical
-		 * @param	toX
-		 * @param	toY
+		 * @param	to
 		 */
-		public function alignAnchor(horizontal:String, vertical:String, toX:Number = 0, toY:Number = 0):void
+		public function alignAnchor(vertical:String, horizontal:String, to:Point = null):void
 		{
 			if (horizontal == AnchorAlign.LEFT)
 			{
@@ -278,7 +341,7 @@ package nemostein.framework.dragonfly
 			}
 			else if (horizontal == AnchorAlign.CUSTOM)
 			{
-				anchor.x = toX;
+				anchor.x = to.x;
 			}
 			
 			if (vertical == AnchorAlign.TOP)
@@ -295,7 +358,7 @@ package nemostein.framework.dragonfly
 			}
 			else if (vertical == AnchorAlign.CUSTOM)
 			{
-				anchor.y = toY;
+				anchor.y = to.y;
 			}
 		}
 		
@@ -308,6 +371,20 @@ package nemostein.framework.dragonfly
 		 */
 		protected function update():void
 		{
+			if (_animation)
+			{
+				_animation.frameTime += time;
+				
+				if (_animation.frameTime > _animation.delay)
+				{
+					_animation.frameTime -= _animation.delay;
+					if(_animation.nextFrame())
+					{
+						frame.x = _animation.frame * frame.height;
+					}
+				}
+			}
+			
 			for (var i:int = 0; i < _childrenCount; ++i)
 			{
 				var child:Core = _children[i];
@@ -340,18 +417,36 @@ package nemostein.framework.dragonfly
 			
 			if (sprite && frame)
 			{
-				if (rotation != 0)
+				if (rotation != 0 || scaleX != 1 || scaleY != 1 || alpha != 1)
 				{
 					var matrix:Matrix = new Matrix();
 					
 					var halfWidth:Number = frame.width / 2;
 					var halfHeight:Number = frame.height / 2;
 					
-					matrix.translate(-halfWidth, -halfHeight);
-					matrix.rotate(rotation);
-					matrix.translate(_canvasPosition.x + halfWidth, _canvasPosition.y + halfHeight);
+					matrix.translate(-anchor.x, -anchor.y);
 					
-					canvas.draw(sprite, matrix, null, null, null, true);
+					matrix.scale(scale.x, scale.y);
+					
+					matrix.rotate(rotation);
+					matrix.translate(_canvasPosition.x + anchor.x, _canvasPosition.y + anchor.y);
+					
+					var colorTransform:ColorTransform = null;
+					
+					if(alpha != 1)
+					{
+						colorTransform = new ColorTransform(1, 1, 1, alpha);
+					}
+					
+					//var rectangle:Rectangle = frame.clone();
+					//
+					//rectangle.x = _canvasPosition.x + anchor.x;
+					//rectangle.y = _canvasPosition.y + anchor.y;
+					//
+					//rectangle.width *= scale.x;
+					//rectangle.height *= scale.y;
+					
+					canvas.draw(sprite, matrix, colorTransform, null, null, true);
 				}
 				else
 				{
@@ -399,6 +494,23 @@ package nemostein.framework.dragonfly
 		public final function get childrenCount():int
 		{
 			return _childrenCount;
+		}
+		
+		/**
+		 * The total number of children that the current object have
+		 */
+		public final function get descendentCount():int
+		{
+			var count:int = _childrenCount;
+			
+			for (var i:int = 0; i < _childrenCount; ++i)
+			{
+				var child:Core = _children[i];
+				
+				count += child.descendentCount;
+			}
+			
+			return count;
 		}
 		
 		/**
@@ -458,11 +570,75 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
+		 * Sets the width of the current object
+		 */
+		public function set width(value:Number):void
+		{
+			frame.width = value;
+		}
+		
+		/**
 		 * Gets the height of the current object
 		 */
 		public function get height():Number
 		{
 			return frame.height;
+		}
+		
+		/**
+		 * Sets the height of the current object
+		 */
+		public function set height(value:Number):void
+		{
+			frame.height = value;
+		}
+		
+		/**
+		 * Gets the horizontal scale of the current object
+		 */
+		public function get scaleX():Number 
+		{
+			return scale.x;
+		}
+		
+		/**
+		 * Sets the horizontal scale of the current object
+		 */
+		public function set scaleX(value:Number):void 
+		{
+			scale.x = value;
+		}
+		
+		/**
+		 * Gets the vertical scale of the current object
+		 */
+		public function get scaleY():Number 
+		{
+			return scale.y;
+		}
+		
+		/**
+		 * Sets the vertical scale of the current object
+		 */
+		public function set scaleY(value:Number):void 
+		{
+			scale.y = value;
+		}
+		
+		/**
+		 * Gets the alpha value of the current object
+		 */
+		public function get alpha():Number 
+		{
+			return opacity;
+		}
+		
+		/**
+		 * Sets the alpha value of the current object, capping the value around 0 and 1
+		 */
+		public function set alpha(value:Number):void 
+		{
+			opacity = value > 1 ? 1 : value < 0 ? 0 : value;
 		}
 	}
 }

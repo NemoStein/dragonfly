@@ -7,6 +7,7 @@ package nemostein.framework.dragonfly
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.system.System;
 	import flash.utils.getTimer;
 	import nemostein.io.Input;
 	
@@ -47,7 +48,6 @@ package nemostein.framework.dragonfly
 			super.initialize();
 			
 			_fpsText = new Text();
-			_fpsText.x = _width - 31;
 			
 			_suspensionScreen = new Shape();
 			
@@ -60,9 +60,11 @@ package nemostein.framework.dragonfly
 		
 		override protected function render():void
 		{
+			canvas.lock();
 			canvas.fillRect(frame, _color);
 			
 			super.render();
+			canvas.unlock();
 		}
 		
 		public function start(stage:Stage, container:DisplayObjectContainer = null):void
@@ -136,7 +138,8 @@ package nemostein.framework.dragonfly
 					_fpsTicks = 0;
 					_fpsThreshold -= 1000;
 					
-					_fpsText.text = _fps + "fps";
+					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")"  + "\r" + descendentCount;
+					_fpsText.x = _width - _fpsText.width - 1;
 					
 					// TODO: Find a better way to render the FPS
 					hideFps();
