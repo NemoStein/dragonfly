@@ -378,7 +378,7 @@ package nemostein.framework.dragonfly
 				if (_animation.frameTime > _animation.delay)
 				{
 					_animation.frameTime -= _animation.delay;
-					if(_animation.nextFrame())
+					if (_animation.nextFrame())
 					{
 						frame.x = _animation.frame * frame.height;
 					}
@@ -431,22 +431,18 @@ package nemostein.framework.dragonfly
 					matrix.rotate(rotation);
 					matrix.translate(_canvasPosition.x + anchor.x, _canvasPosition.y + anchor.y);
 					
+					// TODO: find a better place for this
 					var colorTransform:ColorTransform = null;
-					
-					if(alpha != 1)
+					if (alpha != 1)
 					{
 						colorTransform = new ColorTransform(1, 1, 1, alpha);
 					}
 					
-					//var rectangle:Rectangle = frame.clone();
-					//
-					//rectangle.x = _canvasPosition.x + anchor.x;
-					//rectangle.y = _canvasPosition.y + anchor.y;
-					//
-					//rectangle.width *= scale.x;
-					//rectangle.height *= scale.y;
+					// TODO: find a better place for this
+					var spriteFrame:BitmapData = new BitmapData(frame.width, frame.height, true, 0);
+					spriteFrame.copyPixels(sprite, frame, new Point(), null, null, true);
 					
-					canvas.draw(sprite, matrix, colorTransform, null, null, true);
+					canvas.draw(spriteFrame, matrix, colorTransform, null, null, true);
 				}
 				else
 				{
@@ -467,7 +463,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Sets all descendents as relatives to their parents
 		 */
-		protected function setCurrentDescendentsAsRelative():void 
+		protected function setCurrentDescendentsAsRelative():void
 		{
 			_relativeChildren = true;
 			
@@ -596,7 +592,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Gets the horizontal scale of the current object
 		 */
-		public function get scaleX():Number 
+		public function get scaleX():Number
 		{
 			return scale.x;
 		}
@@ -604,7 +600,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Sets the horizontal scale of the current object
 		 */
-		public function set scaleX(value:Number):void 
+		public function set scaleX(value:Number):void
 		{
 			scale.x = value;
 		}
@@ -612,7 +608,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Gets the vertical scale of the current object
 		 */
-		public function get scaleY():Number 
+		public function get scaleY():Number
 		{
 			return scale.y;
 		}
@@ -620,7 +616,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Sets the vertical scale of the current object
 		 */
-		public function set scaleY(value:Number):void 
+		public function set scaleY(value:Number):void
 		{
 			scale.y = value;
 		}
@@ -628,7 +624,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Gets the alpha value of the current object
 		 */
-		public function get alpha():Number 
+		public function get alpha():Number
 		{
 			return opacity;
 		}
@@ -636,7 +632,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Sets the alpha value of the current object, capping the value around 0 and 1
 		 */
-		public function set alpha(value:Number):void 
+		public function set alpha(value:Number):void
 		{
 			opacity = value > 1 ? 1 : value < 0 ? 0 : value;
 		}
