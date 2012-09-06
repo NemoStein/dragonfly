@@ -14,7 +14,7 @@ package nemostein.framework.dragonfly.plugins.particles.helpers.forces
 		
 		public function apply(particle:Particle):void
 		{
-		
+			particle.scaleX = particle.scaleY *= _value * particle.delay + 1;
 		}
 	}
 }
