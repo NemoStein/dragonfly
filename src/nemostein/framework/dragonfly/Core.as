@@ -16,22 +16,22 @@ package nemostein.framework.dragonfly
 		/**
 		 * [read-only] The time (in ms) of the current frame
 		 */
-		static protected var now:int;
+		static public var now:int;
 		
 		/**
 		 * [read-only] The time (in ms) that passed between the current frame and the last one
 		 */
-		static protected var early:int;
+		static public var early:int;
 		
 		/**
 		 * [read-only] The time (in ms) of the last frame
 		 */
-		static protected var elapsed:int;
+		static public var elapsed:int;
 		
 		/**
 		 * [read-only] The time (in s) of the last frame
 		 */
-		static protected var time:Number;
+		static public var time:Number;
 		
 		/**
 		 * [read-only] The canvas where the current object will be drawn

@@ -9,7 +9,6 @@ package nemostein.framework.dragonfly.plugins.particles
 		static protected var created:int;
 		static protected var pooled:int;
 		
-		
 		static protected var pool:Array;
 		{
 			pool = [];
