@@ -25,6 +25,7 @@ package nemostein.framework.dragonfly
 		private var _fps:Number;
 		private var _fpsTicks:int;
 		private var _fpsThreshold:int;
+		private var _fpsThresholdLimit:int;
 		private var _fpsText:Text;
 		private var _showFps:Boolean;
 		
@@ -47,7 +48,9 @@ package nemostein.framework.dragonfly
 		{
 			super.initialize();
 			
+			_fpsThresholdLimit = 333;
 			_fpsText = new Text();
+			_fpsText.x = 1;
 			
 			_suspensionScreen = new Shape();
 			
@@ -132,14 +135,14 @@ package nemostein.framework.dragonfly
 			{
 				++_fpsTicks;
 				_fpsThreshold += elapsed;
-				if (_fpsThreshold > 1000)
+				if (_fpsThreshold > _fpsThresholdLimit)
 				{
-					_fps = _fpsTicks;
+					_fps = int(_fpsTicks / _fpsThresholdLimit * 1000 + 0.5);
 					_fpsTicks = 0;
-					_fpsThreshold -= 1000;
+					_fpsThreshold -= _fpsThresholdLimit;
 					
 					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")"  + "\r" + descendentCount;
-					_fpsText.x = _width - _fpsText.width - 1;
+					//_fpsText.x = _width - _fpsText.width - 1;
 					
 					// TODO: Find a better way to render the FPS
 					hideFps();

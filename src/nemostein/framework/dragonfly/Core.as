@@ -404,7 +404,7 @@ package nemostein.framework.dragonfly
 		 */
 		protected function render():void
 		{
-			if (parent && relative)
+			if (relative && parent)
 			{
 				_canvasPosition.x = position.x + parent._canvasPosition.x - anchor.x;
 				_canvasPosition.y = position.y + parent._canvasPosition.y - anchor.y;
@@ -461,9 +461,27 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
+		 * Checks if a point is inside the bounding box of the current object
+		 * 
+		 * @param	point
+		 * @return true if point is inside, false otherwise
+		 */
+		public function isInside(point:Point):Boolean
+		{
+			if(relative && parent)
+			{
+				return !(_canvasPosition.x > point.x || _canvasPosition.x + width < point.x || _canvasPosition.y > point.y || _canvasPosition.y + height < point.y);
+			}
+			else
+			{
+				return !(position.x > point.x || position.x + width < point.x || position.y > point.y || position.y + height < point.y);
+			}
+		}
+		
+		/**
 		 * Sets all descendents as relatives to their parents
 		 */
-		protected function setCurrentDescendentsAsRelative():void
+		public function setCurrentDescendentsAsRelative():void
 		{
 			_relativeChildren = true;
 			

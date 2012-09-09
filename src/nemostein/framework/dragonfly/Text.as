@@ -23,7 +23,7 @@ package nemostein.framework.dragonfly
 			
 			_textField = new TextField();
 			_textField.autoSize = TextFieldAutoSize.LEFT;
-			_textField.defaultTextFormat = new TextFormat("Lead II", 8);
+			_textField.defaultTextFormat = new TextFormat("Lead II", 8, 0xffffff);
 			_textField.cacheAsBitmap = true;
 			
 			_offsetMatrix = new Matrix();
