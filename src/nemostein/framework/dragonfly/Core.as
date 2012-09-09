@@ -59,6 +59,11 @@ package nemostein.framework.dragonfly
 		protected var anchor:Point;
 		
 		/**
+		 * The position of the current object relative to the canvas
+		 */
+		protected var canvasPosition:Point;
+		
+		/**
 		 * The position of the current object relative to it's parent
 		 */
 		protected var position:Point;
@@ -100,7 +105,6 @@ package nemostein.framework.dragonfly
 		public var relative:Boolean;
 		
 		private var _parent:Core;
-		private var _canvasPosition:Point;
 		private var _children:Vector.<Core>; // TODO: Use a linked list
 		private var _childrenCount:int;
 		private var _relativeChildren:Boolean;
@@ -130,7 +134,7 @@ package nemostein.framework.dragonfly
 			frame = new Rectangle();
 			anchor = new Point();
 			position = new Point();
-			_canvasPosition = new Point();
+			canvasPosition = new Point();
 			_animations = new Vector.<Animation>();
 			
 			rotation = 0;
@@ -406,13 +410,13 @@ package nemostein.framework.dragonfly
 		{
 			if (relative && parent)
 			{
-				_canvasPosition.x = position.x + parent._canvasPosition.x - anchor.x;
-				_canvasPosition.y = position.y + parent._canvasPosition.y - anchor.y;
+				canvasPosition.x = position.x + parent.canvasPosition.x - anchor.x;
+				canvasPosition.y = position.y + parent.canvasPosition.y - anchor.y;
 			}
 			else
 			{
-				_canvasPosition.x = position.x - anchor.x;
-				_canvasPosition.y = position.y - anchor.y;
+				canvasPosition.x = position.x - anchor.x;
+				canvasPosition.y = position.y - anchor.y;
 			}
 			
 			if (sprite && frame)
@@ -429,7 +433,7 @@ package nemostein.framework.dragonfly
 					matrix.scale(scale.x, scale.y);
 					
 					matrix.rotate(rotation);
-					matrix.translate(_canvasPosition.x + anchor.x, _canvasPosition.y + anchor.y);
+					matrix.translate(canvasPosition.x + anchor.x, canvasPosition.y + anchor.y);
 					
 					// TODO: find a better place for this
 					var colorTransform:ColorTransform = null;
@@ -446,7 +450,7 @@ package nemostein.framework.dragonfly
 				}
 				else
 				{
-					canvas.copyPixels(sprite, frame, _canvasPosition, null, null, true);
+					canvas.copyPixels(sprite, frame, canvasPosition, null, null, true);
 				}
 			}
 			
@@ -470,7 +474,7 @@ package nemostein.framework.dragonfly
 		{
 			if(relative && parent)
 			{
-				return !(_canvasPosition.x > point.x || _canvasPosition.x + width < point.x || _canvasPosition.y > point.y || _canvasPosition.y + height < point.y);
+				return !(canvasPosition.x > point.x || canvasPosition.x + width < point.x || canvasPosition.y > point.y || canvasPosition.y + height < point.y);
 			}
 			else
 			{
