@@ -11,8 +11,13 @@ package nemostein.framework.dragonfly
 		private var _hitArea:Vector.<Point>;
 		private var _relativeHitArea:Vector.<Point>;
 		
-		public var pressed:Boolean;
-		public var hovered:Boolean;
+		public var isPressed:Boolean;
+		public var isHovered:Boolean;
+		
+		public var onPress:Function;
+		public var onRelease:Function;
+		public var onEnter:Function;
+		public var onLeave:Function;
 		
 		/**
 		 * The position, width and height of the bounding box representing the hit area
@@ -76,22 +81,42 @@ package nemostein.framework.dragonfly
 		
 		public function pressed(point:Point = null):void
 		{
-			pressed = true;
+			isPressed = true;
+			
+			if (onPress)
+			{
+				onPress(point);
+			}
 		}
 		
 		public function released(point:Point = null):void
 		{
-			pressed = false;
+			isPressed = false;
+			
+			if (onRelease)
+			{
+				onRelease(point);
+			}
 		}
 		
 		public function entered(point:Point = null):void
 		{
-			hovered = true;
+			isHovered = true;
+			
+			if (onEnter)
+			{
+				onEnter(point);
+			}
 		}
 		
 		public function leaved(point:Point = null):void
 		{
-			hovered = false;
+			isHovered = false;
+			
+			if (onLeave)
+			{
+				onLeave(point);
+			}
 		}
 		
 		override protected function update():void
@@ -118,26 +143,26 @@ package nemostein.framework.dragonfly
 					}
 				}
 				
-				if (!hovered && MathUtils.isInsidePolygon(_relativeHitArea, mousePosition))
+				if (!isHovered && MathUtils.isInsidePolygon(_relativeHitArea, mousePosition))
 				{
 					entered(mousePosition);
 				}
-				else if (hovered)
+				else if (isHovered)
 				{
 					if (!MathUtils.isInsidePolygon(_relativeHitArea, mousePosition))
 					{
-						if (pressed)
+						if (isPressed)
 						{
 							released(mousePosition);
 						}
 						
 						leaved(mousePosition);
 					}
-					else if (!pressed && input.justPressed(Keys.LEFT_MOUSE))
+					else if (!isPressed && input.justPressed(Keys.LEFT_MOUSE))
 					{
 						pressed(mousePosition);
 					}
-					else if (pressed && input.justReleased(Keys.LEFT_MOUSE))
+					else if (isPressed && input.justReleased(Keys.LEFT_MOUSE))
 					{
 						released(mousePosition);
 					}
@@ -145,26 +170,26 @@ package nemostein.framework.dragonfly
 			}
 			else
 			{
-				if (!hovered && isInside(mousePosition))
+				if (!isHovered && isInside(mousePosition))
 				{
 					entered(mousePosition);
 				}
-				else if (hovered)
+				else if (isHovered)
 				{
 					if (!isInside(mousePosition))
 					{
-						if (pressed)
+						if (isPressed)
 						{
 							released(mousePosition);
 						}
 						
 						leaved(mousePosition);
 					}
-					else if (!pressed && input.justPressed(Keys.LEFT_MOUSE))
+					else if (!isPressed && input.justPressed(Keys.LEFT_MOUSE))
 					{
 						pressed(mousePosition);
 					}
-					else if (pressed && input.justReleased(Keys.LEFT_MOUSE))
+					else if (isPressed && input.justReleased(Keys.LEFT_MOUSE))
 					{
 						released(mousePosition);
 					}

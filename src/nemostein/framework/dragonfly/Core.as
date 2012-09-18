@@ -1,5 +1,6 @@
 package nemostein.framework.dragonfly
 {
+	import brotherhood.states.gameplay.heroes.crosshair.Crosshair;
 	import flash.display.BitmapData;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
@@ -104,12 +105,15 @@ package nemostein.framework.dragonfly
 		 */
 		public var relative:Boolean;
 		
+		static private var _zero:Point = new Point();
+		
 		private var _parent:Core;
 		private var _children:Vector.<Core>; // TODO: Use a linked list
 		private var _childrenCount:int;
-		private var _relativeChildren:Boolean;
 		private var _animations:Vector.<Animation>;
 		private var _animation:Animation;
+		private var _colorTransform:ColorTransform;
+		private var _spriteFrame:BitmapData;
 		
 		public function Core(contents:BitmapData = null)
 		{
@@ -136,10 +140,12 @@ package nemostein.framework.dragonfly
 			position = new Point();
 			canvasPosition = new Point();
 			_animations = new Vector.<Animation>();
-			
+			_colorTransform = new ColorTransform(1, 1, 1, 1);
 			rotation = 0;
 			scale = new Point(1, 1);
 			opacity = 1;
+			
+			relative = true;
 			
 			initialize();
 		}
@@ -164,12 +170,6 @@ package nemostein.framework.dragonfly
 			child._parent = this;
 			_children.push(child);
 			++_childrenCount;
-			
-			if (_relativeChildren)
-			{
-				child.relative = true;
-				child.setCurrentDescendentsAsRelative();
-			}
 		}
 		
 		/**
@@ -385,6 +385,9 @@ package nemostein.framework.dragonfly
 					if (_animation.nextFrame())
 					{
 						frame.x = _animation.frame * frame.height;
+						
+						_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
+						_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
 					}
 				}
 			}
@@ -435,18 +438,13 @@ package nemostein.framework.dragonfly
 					matrix.rotate(rotation);
 					matrix.translate(canvasPosition.x + anchor.x, canvasPosition.y + anchor.y);
 					
-					// TODO: find a better place for this
-					var colorTransform:ColorTransform = null;
-					if (alpha != 1)
+					if (!_spriteFrame)
 					{
-						colorTransform = new ColorTransform(1, 1, 1, alpha);
+						_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
+						_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
 					}
 					
-					// TODO: find a better place for this
-					var spriteFrame:BitmapData = new BitmapData(frame.width, frame.height, true, 0);
-					spriteFrame.copyPixels(sprite, frame, new Point(), null, null, true);
-					
-					canvas.draw(spriteFrame, matrix, colorTransform, null, null, true);
+					canvas.draw(_spriteFrame, matrix, _colorTransform, null, null, true);
 				}
 				else
 				{
@@ -466,13 +464,13 @@ package nemostein.framework.dragonfly
 		
 		/**
 		 * Checks if a point is inside the bounding box of the current object
-		 * 
+		 *
 		 * @param	point
 		 * @return true if point is inside, false otherwise
 		 */
 		public function isInside(point:Point):Boolean
 		{
-			if(relative && parent)
+			if (relative && parent)
 			{
 				return !(canvasPosition.x > point.x || canvasPosition.x + width < point.x || canvasPosition.y > point.y || canvasPosition.y + height < point.y);
 			}
@@ -483,19 +481,29 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
-		 * Sets all descendents as relatives to their parents
+		 * Checks if an object's bounding box collides with the bounding box of the current object
+		 *
+		 * @param	core
+		 * @return true if point is inside, false otherwise
 		 */
-		public function setCurrentDescendentsAsRelative():void
+		public function isColliding(core:Core):Boolean
 		{
-			_relativeChildren = true;
-			
-			for (var i:int = 0; i < _childrenCount; ++i)
+			if (core.active)
 			{
-				var child:Core = _children[i];
+				var selfTop:Number = canvasPosition.y;
+				var selfLeft:Number = canvasPosition.x;
+				var selfBottom:Number = selfTop + height;
+				var selfRight:Number = selfLeft + width;
 				
-				child.relative = true;
-				child.setCurrentDescendentsAsRelative();
+				var coreTop:Number = core.canvasPosition.y;
+				var coreLeft:Number = core.canvasPosition.x;
+				var coreBottom:Number = coreTop + core.height;
+				var coreRight:Number = coreLeft + core.width;
+				
+				return !(selfTop > coreBottom || selfBottom < coreTop || selfLeft > coreRight || selfRight < coreLeft);
 			}
+			
+			return false;
 		}
 		
 		/**
@@ -657,6 +665,7 @@ package nemostein.framework.dragonfly
 		public function set alpha(value:Number):void
 		{
 			opacity = value > 1 ? 1 : value < 0 ? 0 : value;
+			_colorTransform.alphaMultiplier = opacity;
 		}
 	}
 }
