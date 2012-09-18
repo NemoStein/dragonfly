@@ -300,9 +300,9 @@ package nemostein.framework.dragonfly
 		/**
 		 * Attach a new animation to the current object
 		 */
-		public function addAnimation(animation:Animation):void
+		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):void
 		{
-			_animations.push(animation);
+			_animations.push(new Animation(id, frames, frameRate, loop, callback));
 		}
 		
 		/**
@@ -314,7 +314,7 @@ package nemostein.framework.dragonfly
 			{
 				if (animation.id == id)
 				{
-					animation.frameIndex = -1;
+					animation.frameIndex = 0;
 					animation.frameTime = 0;
 					
 					_animation = animation;
