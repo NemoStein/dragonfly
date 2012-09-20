@@ -3,54 +3,95 @@ package nemostein.framework.dragonfly
 	
 	public class Animation
 	{
+		private var _animated:Core;
+		
 		public var id:String;
 		public var frames:Array;
 		public var frameRate:Number;
 		public var loop:Boolean;
 		public var callback:Function;
+		
+		public var reverse:Boolean;
+		
 		public var delay:Number;
-		public var lenght:int;
+		public var length:int;
 		
-		public var frame:int;
-		public var frameIndex:int;
-		public var frameTime:Number;
+		public var keyframe:int;
+		public var keyframeTime:Number;
 		
-		public function Animation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null)
+		public function Animation(animated:Core, id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null)
 		{
+			if (frameRate <= 0)
+			{
+				frameRate = 1;
+			}
+			
+			_animated = animated;
+			
 			this.id = id;
 			this.frames = frames;
 			this.frameRate = frameRate;
 			this.loop = loop;
 			this.callback = callback;
 			
+			keyframeTime = 0;
 			delay = 1 / frameRate;
-			lenght = frames.length;
+			length = frames.length;
 		}
 		
-		public function nextFrame():Boolean
-		{	
-			if (frameIndex < lenght - 1 || loop)
+		public function goToFrame(index:int, resetTime:Boolean = false):void
+		{
+			if (resetTime)
 			{
-				++frameIndex;
-				
-				if (frameIndex == lenght)
-				{
-					frameIndex = 0;
-				}
-				
-				if(callback != null)
-				{
-					callback(this, frameIndex);
-				}
-				
-				frame = frames[frameIndex];
-				
-				return true;
+				keyframeTime = 0;
 			}
 			
-			frame = frames[frameIndex];
+			if (loop)
+			{
+				while (index >= length)
+				{
+					index -= length;
+				}
+				
+				while (index < 0)
+				{
+					index += length;
+				}
+			}
+			else
+			{
+				if (index >= length)
+				{
+					index = length - 1;
+				}
+				else if (index < 0)
+				{
+					index = 0;
+				}
+			}
 			
-			return false;
+			if (index != keyframe)
+			{
+				keyframe = index;
+				
+				if (callback != null)
+				{
+					callback(this, index);
+				}
+				
+				_animated.moveSpriteToFrame(frames[index]);
+			}
+		}
+		
+		public function update(time:Number):void
+		{
+			keyframeTime += time;
+			
+			if (keyframeTime >= delay)
+			{
+				keyframeTime -= delay;
+				goToFrame(keyframe + (reverse ? -1 : 1));
+			}
 		}
 	}
 }

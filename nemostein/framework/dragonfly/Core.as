@@ -6,6 +6,7 @@ package nemostein.framework.dragonfly
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.security.SignerTrustSettings;
 	import nemostein.io.Input;
 	
 	/**
@@ -302,24 +303,39 @@ package nemostein.framework.dragonfly
 		 */
 		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):void
 		{
-			_animations.push(new Animation(id, frames, frameRate, loop, callback));
+			_animations.push(new Animation(this, id, frames, frameRate, loop, callback));
 		}
 		
 		/**
 		 * Plays a previously attached animation
 		 */
-		public function playAnimation(id:String):void
+		public function playAnimation(id:String, reset:Boolean = true, reverse:Boolean = false):void
 		{
 			for each (var animation:Animation in _animations)
 			{
 				if (animation.id == id)
 				{
-					animation.frameIndex = 0;
-					animation.frameTime = 0;
+					if(reset)
+					{
+						animation.goToFrame(0, true);
+					}
+					
+					animation.reverse = reverse;
 					
 					_animation = animation;
 				}
 			}
+		}
+		
+		/**
+		 * Renders the frame specified by the index
+		 */
+		public function moveSpriteToFrame(index:int):void
+		{
+			frame.x = index * frame.width;
+			
+			_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
+			_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
 		}
 		
 		/**
@@ -377,19 +393,7 @@ package nemostein.framework.dragonfly
 		{
 			if (_animation)
 			{
-				_animation.frameTime += time;
-				
-				if (_animation.frameTime > _animation.delay)
-				{
-					_animation.frameTime -= _animation.delay;
-					if (_animation.nextFrame())
-					{
-						frame.x = _animation.frame * frame.height;
-						
-						_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
-						_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
-					}
-				}
+				_animation.update(time);
 			}
 			
 			for (var i:int = 0; i < _childrenCount; ++i)
