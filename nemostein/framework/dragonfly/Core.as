@@ -1,12 +1,10 @@
 package nemostein.framework.dragonfly
 {
-	import brotherhood.states.gameplay.heroes.crosshair.Crosshair;
 	import flash.display.BitmapData;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.security.SignerTrustSettings;
 	import nemostein.io.Input;
 	
 	/**

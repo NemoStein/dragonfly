@@ -16,6 +16,7 @@ package nemostein.framework.dragonfly
 		
 		public var onPress:Function;
 		public var onRelease:Function;
+		public var onExecute:Function;
 		public var onEnter:Function;
 		public var onLeave:Function;
 		
@@ -33,8 +34,6 @@ package nemostein.framework.dragonfly
 			super.initialize();
 			
 			_relativeHitArea = new Vector.<Point>();
-			
-			setCurrentDescendentsAsRelative();
 		}
 		
 		protected function drawHitArea(... vertices:Array):void
@@ -99,6 +98,14 @@ package nemostein.framework.dragonfly
 			}
 		}
 		
+		public function executed(point:Point = null):void
+		{
+			if (onExecute)
+			{
+				onExecute(point);
+			}
+		}
+		
 		public function entered(point:Point = null):void
 		{
 			isHovered = true;
@@ -122,6 +129,7 @@ package nemostein.framework.dragonfly
 		override protected function update():void
 		{
 			var mousePosition:Point = input.mouse;
+			var mouseInside:Boolean;
 			
 			if (_hitArea)
 			{
@@ -143,56 +151,36 @@ package nemostein.framework.dragonfly
 					}
 				}
 				
-				if (!isHovered && MathUtils.isInsidePolygon(_relativeHitArea, mousePosition))
-				{
-					entered(mousePosition);
-				}
-				else if (isHovered)
-				{
-					if (!MathUtils.isInsidePolygon(_relativeHitArea, mousePosition))
-					{
-						if (isPressed)
-						{
-							released(mousePosition);
-						}
-						
-						leaved(mousePosition);
-					}
-					else if (!isPressed && input.justPressed(Keys.LEFT_MOUSE))
-					{
-						pressed(mousePosition);
-					}
-					else if (isPressed && input.justReleased(Keys.LEFT_MOUSE))
-					{
-						released(mousePosition);
-					}
-				}
+				mouseInside = MathUtils.isInsidePolygon(_relativeHitArea, mousePosition);
 			}
 			else
 			{
-				if (!isHovered && isInside(mousePosition))
+				mouseInside = isInside(mousePosition);
+			}
+			
+			if (!isHovered && mouseInside)
+			{
+				entered(mousePosition);
+			}
+			else if (isHovered)
+			{
+				if (!mouseInside)
 				{
-					entered(mousePosition);
-				}
-				else if (isHovered)
-				{
-					if (!isInside(mousePosition))
-					{
-						if (isPressed)
-						{
-							released(mousePosition);
-						}
-						
-						leaved(mousePosition);
-					}
-					else if (!isPressed && input.justPressed(Keys.LEFT_MOUSE))
-					{
-						pressed(mousePosition);
-					}
-					else if (isPressed && input.justReleased(Keys.LEFT_MOUSE))
+					if (isPressed)
 					{
 						released(mousePosition);
 					}
+					
+					leaved(mousePosition);
+				}
+				else if (!isPressed && input.justPressed(Keys.LEFT_MOUSE))
+				{
+					pressed(mousePosition);
+				}
+				else if (isPressed && input.justReleased(Keys.LEFT_MOUSE))
+				{
+					executed(mousePosition);
+					released(mousePosition);
 				}
 			}
 			
