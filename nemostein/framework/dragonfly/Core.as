@@ -104,13 +104,17 @@ package nemostein.framework.dragonfly
 		 */
 		public var relative:Boolean;
 		
+		/**
+		 * [read-only] The current playing (or last played) animation
+		 */
+		public var animation:Animation;
+		
 		static private var _zero:Point = new Point();
 		
 		private var _parent:Core;
 		private var _children:Vector.<Core>; // TODO: Use a linked list
 		private var _childrenCount:int;
 		private var _animations:Vector.<Animation>;
-		private var _animation:Animation;
 		private var _colorTransform:ColorTransform;
 		private var _spriteFrame:BitmapData;
 		
@@ -320,7 +324,7 @@ package nemostein.framework.dragonfly
 					
 					animation.reverse = reverse;
 					
-					_animation = animation;
+					this.animation = animation;
 				}
 			}
 		}
@@ -389,9 +393,9 @@ package nemostein.framework.dragonfly
 		 */
 		protected function update():void
 		{
-			if (_animation)
+			if (animation)
 			{
-				_animation.update(time);
+				animation.update(time);
 			}
 			
 			for (var i:int = 0; i < _childrenCount; ++i)
