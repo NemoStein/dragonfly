@@ -18,7 +18,6 @@ package nemostein.framework.dragonfly
 		 */
 		static public var stage:Stage;
 		
-		private var _ready:Boolean;
 		private var _started:Boolean;
 		private var _suspend:Boolean;
 		
@@ -35,6 +34,8 @@ package nemostein.framework.dragonfly
 		private var _height:int;
 		private var _color:uint;
 		
+		private var _contents:Container;
+		
 		public function Game(width:int, height:int, color:uint = 0xffdadfef)
 		{
 			_width = width;
@@ -47,6 +48,9 @@ package nemostein.framework.dragonfly
 		override protected function initialize():void
 		{
 			super.initialize();
+			
+			_contents = new Container();
+			super.add(_contents);
 			
 			_fpsThresholdLimit = 333;
 			_fpsText = new Text();
@@ -117,12 +121,7 @@ package nemostein.framework.dragonfly
 			
 			if (!_started)
 			{
-				if (!_ready)
-				{
-					// TODO: initialize first frame
-					_ready = true;
-				}
-				else if (!_suspend)
+				if (!_suspend)
 				{
 					update();
 					render();
@@ -141,14 +140,30 @@ package nemostein.framework.dragonfly
 					_fpsTicks = 0;
 					_fpsThreshold -= _fpsThresholdLimit;
 					
-					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")"  + "\r" + descendentCount;
+					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")" + "\r" + descendentCount;
 					//_fpsText.x = _width - _fpsText.width - 1;
-					
-					// TODO: Find a better way to render the FPS
-					hideFps();
-					showFps();
 				}
 			}
+		}
+		
+		override public function add(child:Core):void
+		{
+			_contents.add(child);
+		}
+		
+		override public function remove(child:Core):void
+		{
+			_contents.remove(child);
+		}
+		
+		override public function getChildAt(index:int):Core
+		{
+			return _contents.getChildAt(index);
+		}
+		
+		override public function getChildById(id:String):Core
+		{
+			return _contents.getChildById(id);
 		}
 		
 		private function onStageDeactivate(event:Event):void
@@ -180,14 +195,14 @@ package nemostein.framework.dragonfly
 		{
 			_showFps = true;
 			
-			add(_fpsText);
+			super.add(_fpsText);
 		}
 		
 		public function hideFps():void
 		{
 			_showFps = false;
 			
-			remove(_fpsText);
+			super.remove(_fpsText);
 		}
 	}
 }

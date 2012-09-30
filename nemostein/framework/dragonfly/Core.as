@@ -168,7 +168,7 @@ package nemostein.framework.dragonfly
 		 *
 		 * @param	child
 		 */
-		public final function add(child:Core):void
+		public function add(child:Core):void
 		{
 			child._parent = this;
 			_children.push(child);
@@ -180,7 +180,7 @@ package nemostein.framework.dragonfly
 		 *
 		 * @param	child
 		 */
-		public final function remove(child:Core):void
+		public function remove(child:Core):void
 		{
 			child._parent = null;
 			_children.splice(_children.indexOf(child), 1);
@@ -194,7 +194,7 @@ package nemostein.framework.dragonfly
 		 * @return	a child Core
 		 * @throws	RangeError if index is out of bounds (0 > index >= _children)
 		 */
-		public final function getChildAt(index:int):Core
+		public function getChildAt(index:int):Core
 		{
 			return _children[index];
 		}
@@ -206,7 +206,7 @@ package nemostein.framework.dragonfly
 		 * @param	id
 		 * @return	a child Core or null
 		 */
-		public final function getChildById(id:String):Core
+		public function getChildById(id:String):Core
 		{
 			for (var i:int = 0; i < _childrenCount; ++i)
 			{
@@ -317,7 +317,7 @@ package nemostein.framework.dragonfly
 			{
 				if (animation.id == id)
 				{
-					if(reset)
+					if (reset)
 					{
 						animation.goToFrame(0, true);
 					}
