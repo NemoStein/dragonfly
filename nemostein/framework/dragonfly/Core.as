@@ -5,7 +5,7 @@ package nemostein.framework.dragonfly
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import nemostein.io.Input;
+	import nemostein.framework.dragonfly.io.Input;
 	
 	/**
 	 * The highest (and most abstract) class that can be used in the framework
@@ -39,6 +39,16 @@ package nemostein.framework.dragonfly
 		static protected var canvas:BitmapData;
 		
 		/**
+		 * [read-only] The camera
+		 */
+		static protected var camera:Rectangle;
+		
+		/**
+		 * [read-only] The bounds of the camera
+		 */
+		static protected var bounds:Rectangle;
+		
+		/**
 		 * [read-only] The global input
 		 */
 		static protected var input:Input;
@@ -57,6 +67,12 @@ package nemostein.framework.dragonfly
 		 * The anchor point (offset) of the current object
 		 */
 		protected var anchor:Point;
+		
+		/**
+		 * How much parallax the current object have (related to the camera)
+		 * Relative objects aren't affected by this
+		 */
+		protected var parallax:Point;
 		
 		/**
 		 * The position of the current object relative to the canvas
@@ -142,6 +158,7 @@ package nemostein.framework.dragonfly
 			anchor = new Point();
 			position = new Point();
 			canvasPosition = new Point();
+			parallax = new Point(1, 1);
 			_animations = new Vector.<Animation>();
 			_colorTransform = new ColorTransform(1, 1, 1, 1);
 			rotation = 0;
@@ -170,9 +187,38 @@ package nemostein.framework.dragonfly
 		 */
 		public function add(child:Core):void
 		{
+			if (child._parent)
+			{
+				child._parent.remove(child);
+			}
+			
 			child._parent = this;
+			child.added();
 			_children.push(child);
 			++_childrenCount;
+		}
+		
+		/**
+		 * Called when the current object is added into another
+		 */
+		protected function added():void
+		{
+			if (game)
+			{
+				addedToGame();
+			}
+		}
+		
+		/**
+		 * Called when the current object is added into the game
+		 */
+		protected function addedToGame():void
+		{
+			for (var i:int = 0; i < _childrenCount; ++i)
+			{
+				var child:Core = _children[i];
+				child.addedToGame();
+			}
 		}
 		
 		/**
@@ -182,9 +228,36 @@ package nemostein.framework.dragonfly
 		 */
 		public function remove(child:Core):void
 		{
+			var fromGame:Boolean = Boolean(game);
+			
 			child._parent = null;
+			child.removed();
+			if (fromGame)
+			{
+				child.removedfromGame();
+			}
 			_children.splice(_children.indexOf(child), 1);
 			--_childrenCount;
+		}
+		
+		/**
+		 * Called when the current object is removed from another
+		 */
+		protected function removed():void
+		{
+		
+		}
+		
+		/**
+		 * Called when the current object is removed from the game
+		 */
+		protected function removedfromGame():void
+		{
+			for (var i:int = 0; i < _childrenCount; ++i)
+			{
+				var child:Core = _children[i];
+				child.removedfromGame();
+			}
 		}
 		
 		/**
@@ -236,6 +309,14 @@ package nemostein.framework.dragonfly
 				frame.width = rectangle.width;
 				frame.height = rectangle.height;
 			}
+		}
+		
+		/**
+		 * Draws a rectangle into the sprite
+		 */
+		public function drawRectangle(width:Number, height:Number, color:uint, keepSize:Boolean = false):void
+		{
+			draw(new BitmapData(width, height, true, color), keepSize);
 		}
 		
 		/**
@@ -303,9 +384,29 @@ package nemostein.framework.dragonfly
 		/**
 		 * Attach a new animation to the current object
 		 */
-		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):void
+		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):Animation
 		{
-			_animations.push(new Animation(this, id, frames, frameRate, loop, callback));
+			var animation:Animation = new Animation(this, id, frames, frameRate, loop, callback);
+			
+			_animations.push(animation);
+			
+			return animation;
+		}
+		
+		/**
+		 * Finds a previously attached animation by its ID
+		 */
+		public function getAnimation(id:String):Animation
+		{
+			for each (var animation:Animation in _animations)
+			{
+				if (animation.id == id)
+				{
+					return animation;
+				}
+			}
+			
+			return null;
 		}
 		
 		/**
@@ -313,19 +414,17 @@ package nemostein.framework.dragonfly
 		 */
 		public function playAnimation(id:String, reset:Boolean = true, reverse:Boolean = false):void
 		{
-			for each (var animation:Animation in _animations)
+			var animation:Animation = getAnimation(id);
+			if (animation)
 			{
-				if (animation.id == id)
+				if (reset)
 				{
-					if (reset)
-					{
-						animation.goToFrame(0, true);
-					}
-					
-					animation.reverse = reverse;
-					
-					this.animation = animation;
+					animation.goToFrame(0, true);
 				}
+				
+				animation.reverse = reverse;
+				
+				this.animation = animation;
 			}
 		}
 		
@@ -335,9 +434,7 @@ package nemostein.framework.dragonfly
 		public function moveSpriteToFrame(index:int):void
 		{
 			frame.x = index * frame.width;
-			
-			_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
-			_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
+			_spriteFrame = null;
 		}
 		
 		/**
@@ -417,15 +514,18 @@ package nemostein.framework.dragonfly
 		 */
 		protected function render():void
 		{
+			canvasPosition.x = position.x - anchor.x;
+			canvasPosition.y = position.y - anchor.y;
+			
 			if (relative && parent)
 			{
-				canvasPosition.x = position.x + parent.canvasPosition.x - anchor.x;
-				canvasPosition.y = position.y + parent.canvasPosition.y - anchor.y;
+				canvasPosition.x += parent.canvasPosition.x + parent.anchor.x;
+				canvasPosition.y += parent.canvasPosition.y + parent.anchor.y;
 			}
 			else
 			{
-				canvasPosition.x = position.x - anchor.x;
-				canvasPosition.y = position.y - anchor.y;
+				canvasPosition.x -= parallax.x * camera.x;
+				canvasPosition.y -= parallax.y * camera.y;
 			}
 			
 			if (sprite && frame)
@@ -476,14 +576,14 @@ package nemostein.framework.dragonfly
 		 */
 		public function isInside(point:Point):Boolean
 		{
-			if (relative && parent)
-			{
+			//if (relative && parent)
+			//{
 				return !(canvasPosition.x > point.x || canvasPosition.x + width < point.x || canvasPosition.y > point.y || canvasPosition.y + height < point.y);
-			}
-			else
-			{
-				return !(position.x > point.x || position.x + width < point.x || position.y > point.y || position.y + height < point.y);
-			}
+			//}
+			//else
+			//{
+				//return !(position.x > point.x || position.x + width < point.x || position.y > point.y || position.y + height < point.y);
+			//}
 		}
 		
 		/**
@@ -521,9 +621,17 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
+		 * The children that the current object have
+		 */
+		protected function get children():Vector.<Core>
+		{
+			return _children;
+		}
+		
+		/**
 		 * The total number of children that the current object have
 		 */
-		public final function get childrenCount():int
+		public function get childrenCount():int
 		{
 			return _childrenCount;
 		}
@@ -543,6 +651,20 @@ package nemostein.framework.dragonfly
 			}
 			
 			return count;
+		}
+		
+		/**
+		 * Sets the parallax of the current object in each axis
+		 */
+		public function setParallax(x:Number = 1, y:Number = 1, uncheckRelative:Boolean = true):void
+		{
+			parallax.x = x;
+			parallax.y = y;
+			
+			if (uncheckRelative)
+			{
+				relative = false;
+			}
 		}
 		
 		/**
@@ -672,6 +794,25 @@ package nemostein.framework.dragonfly
 		{
 			opacity = value > 1 ? 1 : value < 0 ? 0 : value;
 			_colorTransform.alphaMultiplier = opacity;
+		}
+		
+		/**
+		 * Gets the game instance that the current object was added to
+		 */
+		public function get game():Game
+		{
+			if (this is Game)
+			{
+				return Game(this);
+			}
+			else if (parent)
+			{
+				return parent.game;
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 }

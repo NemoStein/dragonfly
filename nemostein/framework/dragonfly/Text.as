@@ -2,15 +2,25 @@ package nemostein.framework.dragonfly
 {
 	import flash.display.BitmapData;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	
 	public class Text extends Core
 	{
-		private var _textField:TextField;
-		private var _offsetMatrix:Matrix;
+		static public const LEFT:String = TextFormatAlign.LEFT;
+		static public const CENTER:String = TextFormatAlign.CENTER;
+		static public const RIGHT:String = TextFormatAlign.RIGHT;
+		static public const JUSTIFY:String = TextFormatAlign.JUSTIFY;
+		
+		protected var invalid:Boolean;
+		protected var textField:TextField;
+		protected var offsetMatrix:Matrix;
+		
+		private var _deferredAnchorAlignment:DeferredAnchorAlignment;
 		
 		public function Text(string:String = "")
 		{
@@ -21,49 +31,106 @@ package nemostein.framework.dragonfly
 		{
 			super.initialize();
 			
-			_textField = new TextField();
-			_textField.autoSize = TextFieldAutoSize.LEFT;
-			_textField.defaultTextFormat = new TextFormat("Lead II", 8, 0xffffff);
-			_textField.cacheAsBitmap = true;
+			textField = new TextField();
+			textField.cacheAsBitmap = true;
+			textField.autoSize = TextFieldAutoSize.LEFT;
 			
-			_offsetMatrix = new Matrix();
-			_offsetMatrix.translate(-1, -3);
+			offsetMatrix = new Matrix();
+			offsetMatrix.translate(-1, -3);
+			
+			setFormat("Lead II", 8, 0);
+		}
+		
+		public function setFormat(font:String, size:Number, color:uint, align:String = LEFT):void
+		{
+			textField.defaultTextFormat = new TextFormat(font, size, color, null, null, null, null, null, align);
+			
+			invalid = true;
 		}
 		
 		public function get text():String
 		{
-			return _textField.text;
+			return textField.text;
 		}
 		
 		public function set text(value:String):void
 		{
-			_textField.text = value;
+			textField.text = value;
 			
-			var fieldWidth:Number = _textField.textWidth;
-			var fieldHeight:Number = _textField.textHeight - 1;
-			
-			if(fieldWidth <= 0 || fieldHeight <= 0)
+			invalid = true;
+		}
+		
+		override public function alignAnchor(vertical:String, horizontal:String, to:Point = null):void 
+		{
+			if (_deferredAnchorAlignment)
 			{
-				visible = false;
+				_deferredAnchorAlignment.vertical = vertical;
+				_deferredAnchorAlignment.horizontal = horizontal;
+				_deferredAnchorAlignment.to = to;
 			}
 			else
 			{
-				visible = true;
+				_deferredAnchorAlignment = new DeferredAnchorAlignment(vertical, horizontal, to);
+			}
+		}
+		
+		override protected function update():void 
+		{
+			if (invalid)
+			{
+				invalid = false;
 				
-				if (fieldWidth != frame.width || fieldHeight != frame.height)
+				var fieldWidth:Number = textField.textWidth;
+				var fieldHeight:Number = textField.textHeight - 1;
+				
+				if (fieldWidth <= 0 || fieldHeight <= 0)
 				{
-					sprite && sprite.dispose();
-					
-					frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
-					sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
-					sprite.draw(_textField, _offsetMatrix);
+					visible = false;
 				}
 				else
 				{
-					sprite.fillRect(frame, 0);
-					sprite.draw(_textField, _offsetMatrix);
+					visible = true;
+					
+					if (fieldWidth != frame.width || fieldHeight != frame.height)
+					{
+						sprite && sprite.dispose();
+						
+						frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
+						sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
+						sprite.draw(textField, offsetMatrix);
+					}
+					else
+					{
+						sprite.fillRect(frame, 0);
+						sprite.draw(textField, offsetMatrix);
+					}
 				}
 			}
+			
+			if (_deferredAnchorAlignment)
+			{
+				super.alignAnchor(_deferredAnchorAlignment.vertical, _deferredAnchorAlignment.horizontal, _deferredAnchorAlignment.to);
+				
+				_deferredAnchorAlignment = null;
+			}
+			
+			super.update();
 		}
+	}
+}
+
+import flash.geom.Point;
+
+internal class DeferredAnchorAlignment
+{
+	public var vertical:String;
+	public var horizontal:String;
+	public var to:Point;
+	
+	public function DeferredAnchorAlignment(vertical:String, horizontal:String, to:Point)
+	{
+		this.vertical = vertical;
+		this.horizontal = horizontal;
+		this.to = to;
 	}
 }
