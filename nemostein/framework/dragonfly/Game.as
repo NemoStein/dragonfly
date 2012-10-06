@@ -33,8 +33,10 @@ package nemostein.framework.dragonfly
 		private var _width:int;
 		private var _height:int;
 		private var _color:uint;
+		private var _redrawArea:Rectangle;
 		
 		private var _contents:Container;
+		private var _following:Entity;
 		
 		public function Game(width:int, height:int, color:uint = 0xffdadfef)
 		{
@@ -54,6 +56,7 @@ package nemostein.framework.dragonfly
 			
 			_fpsThresholdLimit = 333;
 			_fpsText = new Text();
+			_fpsText.setParallax(0, 0);
 			_fpsText.x = 1;
 			
 			_suspensionScreen = new Shape();
@@ -61,17 +64,12 @@ package nemostein.framework.dragonfly
 			frame = new Rectangle(0, 0, _width, _height);
 			sprite = new BitmapData(_width, _height, true, 0);
 			
+			_redrawArea = frame.clone();
+			bounds = frame.clone();
+			
+			camera = frame;
 			canvas = sprite;
 			_display = new Bitmap(canvas);
-		}
-		
-		override protected function render():void
-		{
-			canvas.lock();
-			canvas.fillRect(frame, _color);
-			
-			super.render();
-			canvas.unlock();
 		}
 		
 		public function start(stage:Stage, container:DisplayObjectContainer = null):void
@@ -140,10 +138,54 @@ package nemostein.framework.dragonfly
 					_fpsTicks = 0;
 					_fpsThreshold -= _fpsThresholdLimit;
 					
-					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")" + "\r" + descendentCount;
-					//_fpsText.x = _width - _fpsText.width - 1;
+					_fpsText.text = _fps + "fps\r" + (System.totalMemory / 1024 / 1024).toFixed(2) + "Mbps - (" + (System.freeMemory / 1024 / 1024).toFixed(2) + ")" + "\r" + descendentCount + " descendents";
 				}
 			}
+		}
+		
+		override protected function update():void
+		{
+			if (_following)
+			{
+				var cameraDistanceX:Number = _following.x - camera.x - camera.width / 2;
+				var cameraDistanceY:Number = _following.y - camera.y - camera.height / 2;
+				
+				if (cameraDistanceX || cameraDistanceY)
+				{
+					// TODO: Ajust the camera ease
+					camera.x += cameraDistanceX / 10;
+					camera.y += cameraDistanceY / 10;
+					
+					if (camera.x < bounds.x)
+					{
+						camera.x = bounds.x;
+					}
+					else if (camera.x + camera.width > bounds.x + bounds.width)
+					{
+						camera.x = bounds.x + bounds.width - camera.width;
+					}
+					
+					if (camera.y < bounds.y)
+					{
+						camera.y = bounds.y;
+					}
+					else if (camera.y + camera.height > bounds.y + bounds.height)
+					{
+						camera.y = bounds.y + bounds.height - camera.height;
+					}
+				}
+			}
+			
+			super.update();
+		}
+		
+		override protected function render():void
+		{
+			canvas.lock();
+			canvas.fillRect(_redrawArea, _color);
+			
+			super.render();
+			canvas.unlock();
 		}
 		
 		override public function add(child:Core):void
@@ -189,6 +231,16 @@ package nemostein.framework.dragonfly
 				
 				stage.removeChild(_suspensionScreen);
 			}
+		}
+		
+		public function follow(entity:Entity):void
+		{
+			_following = entity;
+		}
+		
+		public function stopFollowing():void
+		{
+			_following = null;
 		}
 		
 		public function showFps():void
