@@ -9,6 +9,7 @@ package nemostein.framework.dragonfly
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.System;
+	import flash.ui.Mouse;
 	import flash.utils.getTimer;
 	import nemostein.framework.dragonfly.io.MouseAware;
 	import nemostein.framework.dragonfly.io.Input;
@@ -38,6 +39,8 @@ package nemostein.framework.dragonfly
 		private var _redrawArea:Rectangle;
 		
 		private var _contents:Container;
+		private var _cursor:Entity;
+		private var _defaultCursor:Boolean;
 		private var _following:Entity;
 		
 		public function Game(width:int, height:int, color:uint = 0xffdadfef)
@@ -127,6 +130,12 @@ package nemostein.framework.dragonfly
 			{
 				if (!_suspend)
 				{
+					if (_cursor)
+					{
+						_cursor.x = stage.mouseX;
+						_cursor.y = stage.mouseY;
+					}
+					
 					update();
 					render();
 				}
@@ -230,6 +239,8 @@ package nemostein.framework.dragonfly
 				_suspensionScreen.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
 				_suspensionScreen.graphics.endFill();
 				
+				hideCustomCursor();
+				
 				stage.addChild(_suspensionScreen);
 			}
 		}
@@ -240,7 +251,47 @@ package nemostein.framework.dragonfly
 			{
 				_suspend = false;
 				
+				showCustomCursor();
+				
 				stage.removeChild(_suspensionScreen);
+			}
+		}
+		
+		public function changeCursor(entity:Entity = null):void
+		{
+			if (_cursor)
+			{
+				remove(_cursor);
+			}
+			
+			_cursor = entity;
+			_defaultCursor = !_cursor;
+			
+			if (_defaultCursor)
+			{
+				hideCustomCursor();
+			}
+			else
+			{
+				showCustomCursor();
+			}
+		}
+		
+		private function showCustomCursor():void
+		{
+			if (_cursor)
+			{
+				Mouse.hide();
+				add(_cursor);
+			}
+		}
+		
+		private function hideCustomCursor():void 
+		{
+			if (_cursor)
+			{
+				remove(_cursor);
+				Mouse.show();
 			}
 		}
 		
@@ -339,6 +390,11 @@ package nemostein.framework.dragonfly
 		public function get gameBounds():Rectangle
 		{
 			return bounds.clone();
+		}
+		
+		public function get cursor():Entity 
+		{
+			return _cursor;
 		}
 	}
 }
