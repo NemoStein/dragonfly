@@ -132,8 +132,8 @@ package nemostein.framework.dragonfly
 				{
 					if (_cursor)
 					{
-						_cursor.x = stage.mouseX;
-						_cursor.y = stage.mouseY;
+						_cursor.x = stage.mouseX + camera.x;
+						_cursor.y = stage.mouseY + camera.y;
 					}
 					
 					update();
@@ -170,28 +170,28 @@ package nemostein.framework.dragonfly
 					// TODO: Ajust the camera ease
 					camera.x += cameraDistanceX / 10;
 					camera.y += cameraDistanceY / 10;
-					
-					if (camera.x < bounds.x)
-					{
-						camera.x = bounds.x;
-					}
-					else if (camera.x + camera.width > bounds.x + bounds.width)
-					{
-						camera.x = bounds.x + bounds.width - camera.width;
-					}
-					
-					if (camera.y < bounds.y)
-					{
-						camera.y = bounds.y;
-					}
-					else if (camera.y + camera.height > bounds.y + bounds.height)
-					{
-						camera.y = bounds.y + bounds.height - camera.height;
-					}
 				}
 			}
 			
 			super.update();
+			
+			if (camera.x < bounds.x)
+			{
+				camera.x = bounds.x;
+			}
+			else if (camera.x + camera.width > bounds.x + bounds.width)
+			{
+				camera.x = bounds.x + bounds.width - camera.width;
+			}
+			
+			if (camera.y < bounds.y)
+			{
+				camera.y = bounds.y;
+			}
+			else if (camera.y + camera.height > bounds.y + bounds.height)
+			{
+				camera.y = bounds.y + bounds.height - camera.height;
+			}
 		}
 		
 		override protected function render():void
@@ -282,7 +282,7 @@ package nemostein.framework.dragonfly
 			if (_cursor)
 			{
 				Mouse.hide();
-				add(_cursor);
+				super.add(_cursor);
 			}
 		}
 		
@@ -290,7 +290,7 @@ package nemostein.framework.dragonfly
 		{
 			if (_cursor)
 			{
-				remove(_cursor);
+				super.remove(_cursor);
 				Mouse.show();
 			}
 		}
