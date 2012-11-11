@@ -85,21 +85,6 @@ package nemostein.framework.dragonfly
 		protected var position:Point;
 		
 		/**
-		 * The rotation ngle (z-axis) that the current object is looking to
-		 */
-		protected var rotation:Number;
-		
-		/**
-		 * The horizontal scale of the current object
-		 */
-		protected var scale:Point;
-		
-		/**
-		 * The opacity of the current object
-		 */
-		protected var opacity:Number;
-		
-		/**
 		 * The id of the current object
 		 * Can be any string or null
 		 */
@@ -132,16 +117,12 @@ package nemostein.framework.dragonfly
 		private var _childrenCount:int;
 		private var _animations:Vector.<Animation>;
 		private var _colorTransform:ColorTransform;
-		private var _spriteFrame:BitmapData;
+		private var _flipped:Boolean;
+		private var _currentFrame:int;
 		
-		public function Core(contents:BitmapData = null)
+		public function Core()
 		{
 			create();
-			
-			if (contents)
-			{
-				draw(contents);
-			}
 		}
 		
 		/**
@@ -161,9 +142,6 @@ package nemostein.framework.dragonfly
 			parallax = new Point(1, 1);
 			_animations = new Vector.<Animation>();
 			_colorTransform = new ColorTransform(1, 1, 1, 1);
-			rotation = 0;
-			scale = new Point(1, 1);
-			opacity = 1;
 			
 			relative = true;
 			
@@ -296,27 +274,53 @@ package nemostein.framework.dragonfly
 		/**
 		 * Draws a BitmapData into the sprite
 		 */
-		public function draw(data:BitmapData, keepSize:Boolean = false):void
+		public function draw(data:BitmapData, width:int = -1, height:int = -1, canFlip:Boolean = false):void
 		{
 			sprite = data.clone();
 			
-			if (!keepSize)
+			if (canFlip)
 			{
-				var rectangle:Rectangle = data.rect;
+				var bitmapData:BitmapData = new BitmapData(sprite.width << 1, sprite.height, true, 0);
+				bitmapData.draw(sprite);
 				
-				frame.x = rectangle.x;
-				frame.y = rectangle.y;
-				frame.width = rectangle.width;
-				frame.height = rectangle.height;
+				var matrix:Matrix = new Matrix();
+				matrix.scale(-1, 1);
+				matrix.translate(bitmapData.width, 0);
+				
+				bitmapData.draw(sprite, matrix);
+				
+				sprite = bitmapData;
+			}
+			
+			frame.x = 0;
+			frame.y = 0;
+			
+			if (width == -1)
+			{
+				frame.width = data.width;
+			}
+			else
+			{
+				frame.width = width;
+				
+			}
+			
+			if (height == -1)
+			{
+				frame.height = data.height;
+			}
+			else
+			{
+				frame.height = height;
 			}
 		}
 		
 		/**
 		 * Draws a rectangle into the sprite
 		 */
-		public function drawRectangle(width:Number, height:Number, color:uint, keepSize:Boolean = false):void
+		public function drawRectangle(width:Number, height:Number, color:uint):void
 		{
-			draw(new BitmapData(width, height, true, color), keepSize);
+			draw(new BitmapData(width, height, true, color), width, height);
 		}
 		
 		/**
@@ -383,6 +387,13 @@ package nemostein.framework.dragonfly
 		
 		/**
 		 * Attach a new animation to the current object
+		 *
+		 * @param	id
+		 * @param	frames
+		 * @param	frameRate
+		 * @param	loop
+		 * @param	callback	function(animation:Animation, keyframe:int):void
+		 * @return
 		 */
 		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):Animation
 		{
@@ -433,8 +444,16 @@ package nemostein.framework.dragonfly
 		 */
 		public function moveSpriteToFrame(index:int):void
 		{
-			frame.x = index * frame.width;
-			_spriteFrame = null;
+			_currentFrame = index;
+			
+			if (_flipped)
+			{
+				frame.x = sprite.width - (index + 1) * frame.width;
+			}
+			else
+			{
+				frame.x = index * frame.width;
+			}
 		}
 		
 		/**
@@ -530,32 +549,7 @@ package nemostein.framework.dragonfly
 			
 			if (sprite && frame)
 			{
-				if (rotation != 0 || scaleX != 1 || scaleY != 1 || alpha != 1)
-				{
-					var matrix:Matrix = new Matrix();
-					
-					var halfWidth:Number = frame.width / 2;
-					var halfHeight:Number = frame.height / 2;
-					
-					matrix.translate(-anchor.x, -anchor.y);
-					
-					matrix.scale(scale.x, scale.y);
-					
-					matrix.rotate(rotation);
-					matrix.translate(canvasPosition.x + anchor.x, canvasPosition.y + anchor.y);
-					
-					if (!_spriteFrame)
-					{
-						_spriteFrame = new BitmapData(frame.width, frame.height, true, 0);
-						_spriteFrame.copyPixels(sprite, frame, _zero, null, null, true);
-					}
-					
-					canvas.draw(_spriteFrame, matrix, _colorTransform, null, null, true);
-				}
-				else
-				{
-					canvas.copyPixels(sprite, frame, canvasPosition, null, null, true);
-				}
+				canvas.copyPixels(sprite, frame, canvasPosition, null, null, true);
 			}
 			
 			for (var i:int = 0; i < _childrenCount; ++i)
@@ -576,14 +570,7 @@ package nemostein.framework.dragonfly
 		 */
 		public function isInside(point:Point):Boolean
 		{
-			//if (relative && parent)
-			//{
-				return !(canvasPosition.x > point.x || canvasPosition.x + width < point.x || canvasPosition.y > point.y || canvasPosition.y + height < point.y);
-			//}
-			//else
-			//{
-				//return !(position.x > point.x || position.x + width < point.x || position.y > point.y || position.y + height < point.y);
-			//}
+			return !(canvasPosition.x > point.x || canvasPosition.x + width < point.x || canvasPosition.y > point.y || canvasPosition.y + height < point.y);
 		}
 		
 		/**
@@ -610,6 +597,15 @@ package nemostein.framework.dragonfly
 			}
 			
 			return false;
+		}
+		
+		/**
+		 * If sprite of the current object can flip, shows fliped version
+		 */
+		public function flip():void 
+		{
+			_flipped = !_flipped;
+			moveSpriteToFrame(_currentFrame);
 		}
 		
 		/**
@@ -700,22 +696,6 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
-		 * Gets the angle (z-axis) that the current object is looking to
-		 */
-		public function get angle():Number
-		{
-			return rotation;
-		}
-		
-		/**
-		 * Sets the angle (z-axis) that the current object is looking to
-		 */
-		public function set angle(value:Number):void
-		{
-			rotation = value;
-		}
-		
-		/**
 		 * Gets the width of the current object
 		 */
 		public function get width():Number
@@ -745,55 +725,6 @@ package nemostein.framework.dragonfly
 		public function set height(value:Number):void
 		{
 			frame.height = value;
-		}
-		
-		/**
-		 * Gets the horizontal scale of the current object
-		 */
-		public function get scaleX():Number
-		{
-			return scale.x;
-		}
-		
-		/**
-		 * Sets the horizontal scale of the current object
-		 */
-		public function set scaleX(value:Number):void
-		{
-			scale.x = value;
-		}
-		
-		/**
-		 * Gets the vertical scale of the current object
-		 */
-		public function get scaleY():Number
-		{
-			return scale.y;
-		}
-		
-		/**
-		 * Sets the vertical scale of the current object
-		 */
-		public function set scaleY(value:Number):void
-		{
-			scale.y = value;
-		}
-		
-		/**
-		 * Gets the alpha value of the current object
-		 */
-		public function get alpha():Number
-		{
-			return opacity;
-		}
-		
-		/**
-		 * Sets the alpha value of the current object, capping the value around 0 and 1
-		 */
-		public function set alpha(value:Number):void
-		{
-			opacity = value > 1 ? 1 : value < 0 ? 0 : value;
-			_colorTransform.alphaMultiplier = opacity;
 		}
 		
 		/**
