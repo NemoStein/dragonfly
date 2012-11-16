@@ -3,7 +3,7 @@ package nemostein.framework.dragonfly
 	
 	public class Animation
 	{
-		private var _animated:Core;
+		private var _animated:Entity;
 		
 		public var id:String;
 		public var frames:Array;
@@ -19,7 +19,7 @@ package nemostein.framework.dragonfly
 		public var keyframe:int;
 		public var keyframeTime:Number;
 		
-		public function Animation(animated:Core, id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null)
+		public function Animation(animated:Entity, id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null)
 		{
 			if (frameRate <= 0)
 			{

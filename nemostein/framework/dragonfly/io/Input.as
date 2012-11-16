@@ -11,6 +11,8 @@ package nemostein.framework.dragonfly.io
 	{
 		/*** Mouse Variables **********************************************************/
 		private var _mouse:Point = new Point();
+		private var _lastMouse:Point = new Point();
+		private var _mouseDelta:Point = new Point();
 		private var _leftMouseDown:Point = new Point();
 		private var _leftMouseUp:Point = new Point();
 		private var _rightMouseDown:Point = new Point();
@@ -108,8 +110,14 @@ package nemostein.framework.dragonfly.io
 			wheelUp = false;
 			wheelDown = false;
 			
+			_lastMouse.x = _mouse.x;
+			_lastMouse.y = _mouse.y;
+			
 			_mouse.x = _stage.mouseX;
 			_mouse.y = _stage.mouseY;
+			
+			_mouseDelta.x = _mouse.x - _lastMouse.x;
+			_mouseDelta.y = _mouse.y - _lastMouse.y;
 		}
 		
 		private function reset():void
@@ -206,37 +214,42 @@ package nemostein.framework.dragonfly.io
 		
 		public function get mouse():Point
 		{
-			return _mouse.clone();
+			return new Point(_mouse.x, _mouse.y);
+		}
+		
+		public function get mouseDelta():Point
+		{
+			return new Point(_mouseDelta.x, _mouseDelta.y);
 		}
 		
 		public function get leftMouseDown():Point
 		{
-			return _leftMouseDown.clone();
+			return new Point(_leftMouseDown.x, _leftMouseDown.y);
 		}
 		
 		public function get leftMouseUp():Point
 		{
-			return _leftMouseUp.clone();
+			return new Point(_leftMouseUp.x, _leftMouseUp.y);
 		}
 		
 		public function get rightMouseDown():Point
 		{
-			return _rightMouseDown.clone();
+			return new Point(_rightMouseDown.x, _rightMouseDown.y);
 		}
 		
 		public function get rightMouseUp():Point
 		{
-			return _rightMouseUp.clone();
+			return new Point(_rightMouseUp.x, _rightMouseUp.y);
 		}
 		
 		public function get middleMouseDown():Point
 		{
-			return _middleMouseDown.clone();
+			return new Point(_middleMouseDown.x, _middleMouseDown.y);
 		}
 		
 		public function get middleMouseUp():Point
 		{
-			return _middleMouseUp.clone();
+			return new Point(_middleMouseUp.x, _middleMouseUp.y);
 		}
 	}
 }

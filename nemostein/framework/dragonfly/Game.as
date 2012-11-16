@@ -14,7 +14,7 @@ package nemostein.framework.dragonfly
 	import nemostein.framework.dragonfly.io.MouseAware;
 	import nemostein.framework.dragonfly.io.Input;
 	
-	public class Game extends Core
+	public class Game extends Container
 	{
 		/**
 		 * [read-only]
@@ -56,29 +56,27 @@ package nemostein.framework.dragonfly
 		{
 			super.initialize();
 			
-			id = "__Game::Game";
-			
 			_contents = new Container();
-			_contents.id = "__Container::GameContainer";
 			super.add(_contents);
 			
 			_fpsThresholdLimit = 333;
 			_fpsText = new Text();
-			_fpsText.id = "__Text::FPS";
 			_fpsText.setParallax(0, 0);
 			_fpsText.x = 1;
 			
 			_suspensionScreen = new Shape();
 			
-			frame = new Rectangle(0, 0, _width, _height);
-			sprite = new BitmapData(_width, _height, true, 0);
+			bounds = new Rectangle(0, 0, _width, _height);
+			camera = new Rectangle(0, 0, _width, _height);
 			
-			_redrawArea = frame.clone();
-			bounds = frame.clone();
-			
-			camera = frame;
-			canvas = sprite;
+			_redrawArea = new Rectangle(0, 0, _width, _height);
+			canvas = new BitmapData(_width, _height, true, 0);
 			_display = new Bitmap(canvas);
+			
+			now = getTimer();
+			elapsed = 0;
+			time = 0;
+			early = now;
 		}
 		
 		public function start(stage:Stage, container:DisplayObjectContainer = null):void
@@ -203,22 +201,22 @@ package nemostein.framework.dragonfly
 			canvas.unlock();
 		}
 		
-		override public function add(child:Core):void
+		override public function add(child:Container):void
 		{
 			_contents.add(child);
 		}
 		
-		override public function remove(child:Core):void
+		override public function remove(child:Container):void
 		{
 			_contents.remove(child);
 		}
 		
-		override public function getChildAt(index:int):Core
+		override public function getChildAt(index:int):Container
 		{
 			return _contents.getChildAt(index);
 		}
 		
-		override public function getChildById(id:String):Core
+		override public function getChildById(id:String):Container
 		{
 			return _contents.getChildById(id);
 		}
@@ -353,13 +351,13 @@ package nemostein.framework.dragonfly
 			propagateMouseSignal(this, key, mouse, false);
 		}
 		
-		private function propagateMouseSignal(core:Core, key:int, mouse:Point, down:Boolean):Boolean
+		private function propagateMouseSignal(entity:Container, key:int, mouse:Point, down:Boolean):Boolean
 		{
 			var chain:Boolean = true;
 			
-			for (var i:int = core.childrenCount - 1; i >= 0; --i)
+			for (var i:int = entity.childrenCount - 1; i >= 0; --i)
 			{
-				var child:Core = core.getChildAt(i);
+				var child:Container = entity.getChildAt(i);
 				if (child.active && child.visible)
 				{
 					chain = propagateMouseSignal(child, key, mouse, down);
@@ -371,7 +369,7 @@ package nemostein.framework.dragonfly
 				}
 			}
 			
-			var aware:MouseAware = core as MouseAware;
+			var aware:MouseAware = entity as MouseAware;
 			if (aware)
 			{
 				if (down)

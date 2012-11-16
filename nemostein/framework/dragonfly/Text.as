@@ -9,7 +9,7 @@ package nemostein.framework.dragonfly
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
-	public class Text extends Core
+	public class Text extends Entity
 	{
 		static public const LEFT:String = TextFormatAlign.LEFT;
 		static public const CENTER:String = TextFormatAlign.CENTER;
