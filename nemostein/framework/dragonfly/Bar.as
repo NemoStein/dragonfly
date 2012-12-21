@@ -1,7 +1,7 @@
 package nemostein.framework.dragonfly
 {
 	
-	public class Bar extends Container
+	public class Bar extends Entity
 	{
 		private var _content:Entity;
 		private var _getValueCallback:Function;

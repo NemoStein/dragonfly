@@ -2,9 +2,9 @@ package nemostein.framework.dragonfly.plugins.particles
 {
 	import flash.display.BitmapData;
 	import flash.utils.Dictionary;
-	import nemostein.framework.dragonfly.Core;
+	import nemostein.framework.dragonfly.Entity;
 	
-	internal class ParticlePool extends Core
+	internal class ParticlePool extends Entity
 	{
 		static protected var created:int;
 		static protected var pooled:int;

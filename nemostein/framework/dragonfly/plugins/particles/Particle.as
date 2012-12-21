@@ -43,9 +43,9 @@ package nemostein.framework.dragonfly.plugins.particles
 			life = emitter.particleLife.value;
 			direction = emitter.particleDirection.value;
 			speed = emitter.particleSpeed.value;
-			angle = emitter.particleAngle.value;
-			scaleX = emitter.particleScaleX.value;
-			scaleY = emitter.particleScaleY.value;
+			//angle = emitter.particleAngle.value;
+			//scaleX = emitter.particleScaleX.value;
+			//scaleY = emitter.particleScaleY.value;
 			
 			forces = emitter.forces;
 			tests = emitter.tests;

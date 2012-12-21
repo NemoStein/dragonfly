@@ -93,5 +93,11 @@ package nemostein.framework.dragonfly
 				goToFrame(keyframe + (reverse ? -1 : 1));
 			}
 		}
+		
+		public function setFrameRate(value:Number):void
+		{
+			frameRate = value;
+			delay = 1 / frameRate;
+		}
 	}
 }

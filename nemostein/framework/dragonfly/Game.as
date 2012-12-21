@@ -13,6 +13,7 @@ package nemostein.framework.dragonfly
 	import flash.utils.getTimer;
 	import nemostein.framework.dragonfly.io.MouseAware;
 	import nemostein.framework.dragonfly.io.Input;
+	import nemostein.framework.dragonfly.plugins.shadowedtext.ShadowedText;
 	
 	public class Game extends Container
 	{
@@ -36,6 +37,7 @@ package nemostein.framework.dragonfly
 		private var _width:int;
 		private var _height:int;
 		private var _color:uint;
+		private var _zoom:Number;
 		private var _redrawArea:Rectangle;
 		
 		private var _contents:Container;
@@ -43,11 +45,12 @@ package nemostein.framework.dragonfly
 		private var _defaultCursor:Boolean;
 		private var _following:Entity;
 		
-		public function Game(width:int, height:int, color:uint = 0xffdadfef)
+		public function Game(width:int, height:int, color:uint = 0xffdadfef, zoom:Number = 1)
 		{
 			_width = width;
 			_height = height;
 			_color = color;
+			_zoom = zoom;
 			
 			super();
 		}
@@ -60,7 +63,7 @@ package nemostein.framework.dragonfly
 			super.add(_contents);
 			
 			_fpsThresholdLimit = 333;
-			_fpsText = new Text();
+			_fpsText = new ShadowedText();
 			_fpsText.setParallax(0, 0);
 			_fpsText.x = 1;
 			
@@ -72,6 +75,8 @@ package nemostein.framework.dragonfly
 			_redrawArea = new Rectangle(0, 0, _width, _height);
 			canvas = new BitmapData(_width, _height, true, 0);
 			_display = new Bitmap(canvas);
+			
+			_display.scaleX = _display.scaleY = _zoom;
 			
 			now = getTimer();
 			elapsed = 0;

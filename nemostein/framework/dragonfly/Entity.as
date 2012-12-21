@@ -7,7 +7,6 @@ package nemostein.framework.dragonfly
 	
 	public class Entity extends Container
 	{
-		
 		/**
 		 * The sprite of the current object that will be drawn on cavas
 		 */
@@ -171,6 +170,14 @@ package nemostein.framework.dragonfly
 				
 				this.animation = animation;
 			}
+		}
+		
+		/**
+		 * Stop the current playing animation
+		 */
+		public function stopAnimation():void
+		{
+			animation = null;
 		}
 		
 		/**

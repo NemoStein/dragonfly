@@ -38,7 +38,7 @@ package nemostein.framework.dragonfly
 			offsetMatrix = new Matrix();
 			offsetMatrix.translate(-1, -3);
 			
-			setFormat("Lead II", 8, 0);
+			setFormat("Lead III", 8, 0xffffff);
 		}
 		
 		public function setFormat(font:String, size:Number, color:uint, align:String = LEFT):void

@@ -44,12 +44,6 @@ package nemostein.framework.dragonfly.plugins.shadowedtext
 			invalid = true;
 		}
 		
-		override public function set text(value:String):void
-		{
-			
-			super.text = value;
-		}
-		
 		override protected function update():void
 		{
 			if (invalid)
