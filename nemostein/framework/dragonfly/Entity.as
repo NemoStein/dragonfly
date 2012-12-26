@@ -52,7 +52,17 @@ package nemostein.framework.dragonfly
 		private var _flipped:Boolean;
 		private var _currentFrame:int;
 		
-		override protected function initialize():void 
+		public function Entity(data:BitmapData = null, width:int = -1, height:int = -1, canFlip:Boolean = false)
+		{
+			super();
+			
+			if(data)
+			{
+				draw(data, width, height, canFlip);
+			}
+		}
+		
+		override protected function initialize():void
 		{
 			super.initialize();
 			
@@ -281,7 +291,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * If sprite of the current object can flip, shows fliped version
 		 */
-		public function flip():void 
+		public function flip():void
 		{
 			_flipped = !_flipped;
 			moveSpriteToFrame(_currentFrame);
@@ -290,7 +300,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * Tells if the current object is fliped
 		 */
-		public function get flipped():Boolean 
+		public function get flipped():Boolean
 		{
 			return _flipped;
 		}
@@ -373,7 +383,7 @@ package nemostein.framework.dragonfly
 			frame.height = value;
 		}
 		
-		override protected function update():void 
+		override protected function update():void
 		{
 			if (animation)
 			{
@@ -383,7 +393,7 @@ package nemostein.framework.dragonfly
 			super.update();
 		}
 		
-		override protected function render():void 
+		override protected function render():void
 		{
 			canvasPosition.x = position.x - anchor.x;
 			canvasPosition.y = position.y - anchor.y;

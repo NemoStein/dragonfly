@@ -1,20 +1,18 @@
 package nemostein.framework.dragonfly
 {
+	import nemostein.utils.ErrorUtils;
 	
 	public class Bar extends Entity
 	{
-		private var _content:Entity;
 		private var _getValueCallback:Function;
 		private var _getMaxValueCallback:Function;
 		private var _vertical:Boolean;
 		private var _reverse:Boolean;
+		private var _x:Number;
+		private var _y:Number;
 		
-		private var _length:Number;
-		private var _initialLocaltion:Number;
-		
-		public function Bar(content:Entity, getValueCallback:Function, getMaxValueCallback:Function, vertical:Boolean = false, reverse:Boolean = false)
+		public function Bar(getValueCallback:Function, getMaxValueCallback:Function, vertical:Boolean = false, reverse:Boolean = false)
 		{
-			_content = content;
 			_getValueCallback = getValueCallback;
 			_getMaxValueCallback = getMaxValueCallback;
 			_vertical = vertical;
@@ -23,48 +21,68 @@ package nemostein.framework.dragonfly
 			super();
 		}
 		
-		override protected function initialize():void
-		{
-			super.initialize();
-			
-			if (!_vertical)
-			{
-				_length = _content.width;
-				_initialLocaltion = _content.x;
-			}
-			else
-			{
-				_length = _content.height;
-				_initialLocaltion = _content.y;
-			}
-			
-			add(_content);
-		}
-		
 		override protected function update():void
 		{
 			super.update();
 			
-			var length:int = _getValueCallback() / _getMaxValueCallback() * _length;
+			var totalLength:Number = getLength();
+			var length:int = _getValueCallback() / _getMaxValueCallback() * totalLength;
 			
 			if (!_vertical)
 			{
-				_content.width = length;
+				width = length;
 				
 				if (_reverse)
 				{
-					_content.x = _initialLocaltion + (_length - length);
+					super.x = _x + (totalLength - length);
 				}
+				else
+				{
+					super.x = _x;
+				}
+				
+				super.y = _y;
 			}
 			else
 			{
-				_content.height = length;
+				height = length;
 				
 				if (!_reverse)
 				{
-					_content.y = _initialLocaltion + (_length - length);
+					super.y = _y + (totalLength - length);
 				}
+				else
+				{
+					super.y = _y;
+				}
+				
+				super.x = _x;
 			}
+		}
+		
+		protected function getLength():Number 
+		{
+			throw ErrorUtils.abstractMethod(this, "Bar", "getLength");
+		}
+		
+		override public function get x():Number 
+		{
+			return _x;
+		}
+		
+		override public function set x(value:Number):void 
+		{
+			_x = value;
+		}
+		
+		override public function get y():Number 
+		{
+			return _y;
+		}
+		
+		override public function set y(value:Number):void 
+		{
+			_y = value;
 		}
 	}
 }

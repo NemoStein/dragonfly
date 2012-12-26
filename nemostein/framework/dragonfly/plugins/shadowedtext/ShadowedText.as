@@ -17,9 +17,9 @@ package nemostein.framework.dragonfly.plugins.shadowedtext
 		private var _shadowColor:uint;
 		private var _shadowAlpha:Number;
 		
-		public function ShadowedText(string:String = "")
+		public function ShadowedText(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff, align:String = LEFT)
 		{
-			super(string);
+			super(string, font, size, color, align);
 		}
 		
 		override protected function initialize():void
@@ -34,12 +34,13 @@ package nemostein.framework.dragonfly.plugins.shadowedtext
 			setShadow();
 		}
 		
-		public function setShadow(offsetX:Number = -1, offsetY:Number = 1, color:uint = 0, alpha:Number = 0.8):void
+		public function setShadow(offsetX:Number = -1, offsetY:Number = 1, color:uint = 0xcc000000):void
 		{
 			_shadowOffset.x = offsetX;
 			_shadowOffset.y = offsetY;
-			_shadowColor = color;
-			_shadowAlpha = alpha;
+			
+			_shadowAlpha = (color >> 24 & 0xff) / 0xff;
+			_shadowColor = color & 0xffffff;
 			
 			invalid = true;
 		}
@@ -49,74 +50,71 @@ package nemostein.framework.dragonfly.plugins.shadowedtext
 			if (invalid)
 			{
 				invalid = false;
-				
-				var fieldWidth:Number = textField.textWidth;
-				var fieldHeight:Number = textField.textHeight - 1;
-				
-				if (fieldWidth <= 0 || fieldHeight <= 0)
-				{
-					visible = false;
-				}
-				else
-				{
-					visible = true;
-					
-					var colorTransform:ColorTransform = _shadowTextField.transform.colorTransform;
-					colorTransform.alphaMultiplier = _shadowAlpha;
-					
-					var shadowTextFormat:TextFormat = textField.defaultTextFormat;
-					shadowTextFormat.color = _shadowColor;
-					
-					_shadowTextField.defaultTextFormat = shadowTextFormat;
-					_shadowTextField.transform.colorTransform = colorTransform;
-					_shadowTextField.text = textField.text;
-					
-					var absoluteShadowOffsetX:Number = _shadowOffset.x < 0 ? -_shadowOffset.x : _shadowOffset.x;
-					var absoluteShadowOffsetY:Number = _shadowOffset.y < 0 ? -_shadowOffset.y : _shadowOffset.y;
-					
-					var textOffsetMatrix:Matrix = offsetMatrix.clone();
-					var shadowOffsetMatrix:Matrix = offsetMatrix.clone();
-					
-					if (_shadowOffset.x < 0)
-					{
-						textOffsetMatrix.tx += absoluteShadowOffsetX;
-					}
-					else
-					{
-						shadowOffsetMatrix.tx += absoluteShadowOffsetX;
-					}
-					
-					if (_shadowOffset.y < 0)
-					{
-						textOffsetMatrix.ty += absoluteShadowOffsetY;
-					}
-					else
-					{
-						shadowOffsetMatrix.ty += absoluteShadowOffsetY;
-					}
-					
-					fieldWidth += absoluteShadowOffsetX;
-					fieldHeight += absoluteShadowOffsetY;
-					
-					if (fieldWidth != frame.width || fieldHeight != frame.height)
-					{
-						sprite && sprite.dispose();
-						
-						frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
-						sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
-						sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
-						sprite.draw(textField, textOffsetMatrix);
-					}
-					else
-					{
-						sprite.fillRect(frame, 0);
-						sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
-						sprite.draw(textField, textOffsetMatrix);
-					}
-				}
+				redraw();
 			}
 			
 			super.update();
+		}
+		
+		override protected function redraw():void 
+		{
+			super.redraw();
+			
+			if (visible)
+			{
+				var colorTransform:ColorTransform = _shadowTextField.transform.colorTransform;
+				colorTransform.alphaMultiplier = _shadowAlpha;
+				
+				var shadowTextFormat:TextFormat = textField.defaultTextFormat;
+				shadowTextFormat.color = _shadowColor;
+				
+				_shadowTextField.defaultTextFormat = shadowTextFormat;
+				_shadowTextField.transform.colorTransform = colorTransform;
+				_shadowTextField.text = textField.text;
+				
+				var absoluteShadowOffsetX:Number = _shadowOffset.x < 0 ? -_shadowOffset.x : _shadowOffset.x;
+				var absoluteShadowOffsetY:Number = _shadowOffset.y < 0 ? -_shadowOffset.y : _shadowOffset.y;
+				
+				var textOffsetMatrix:Matrix = offsetMatrix.clone();
+				var shadowOffsetMatrix:Matrix = offsetMatrix.clone();
+				
+				if (_shadowOffset.x < 0)
+				{
+					textOffsetMatrix.tx += absoluteShadowOffsetX;
+				}
+				else
+				{
+					shadowOffsetMatrix.tx += absoluteShadowOffsetX;
+				}
+				
+				if (_shadowOffset.y < 0)
+				{
+					textOffsetMatrix.ty += absoluteShadowOffsetY;
+				}
+				else
+				{
+					shadowOffsetMatrix.ty += absoluteShadowOffsetY;
+				}
+				
+				var fieldWidth:Number = absoluteShadowOffsetX + textField.textWidth;
+				var fieldHeight:Number = absoluteShadowOffsetY + textField.textHeight - 1;
+				
+				if (fieldWidth != frame.width || fieldHeight != frame.height)
+				{
+					sprite && sprite.dispose();
+					
+					frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
+					sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
+					sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
+					sprite.draw(textField, textOffsetMatrix);
+				}
+				else
+				{
+					sprite.fillRect(frame, 0);
+					sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
+					sprite.draw(textField, textOffsetMatrix);
+				}
+			}
 		}
 	}
 }
