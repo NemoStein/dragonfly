@@ -17,9 +17,9 @@ package nemostein.framework.dragonfly.plugins.shadowedtext
 		private var _shadowColor:uint;
 		private var _shadowAlpha:Number;
 		
-		public function ShadowedText(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff)
+		public function ShadowedText(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff, align:String = LEFT)
 		{
-			super(string, font, size, color);
+			super(string, font, size, color, align);
 		}
 		
 		override protected function initialize():void

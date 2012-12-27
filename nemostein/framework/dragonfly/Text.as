@@ -30,13 +30,15 @@ package nemostein.framework.dragonfly
 		private var _size:Number;
 		private var _color:uint;
 		private var _alpha:Number;
+		private var _align:String;
 		
-		public function Text(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff)
+		public function Text(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff, align:String = LEFT)
 		{
 			_text = string;
 			_font = font;
 			_size = size;
 			_color = color;
+			_align = align;
 			
 			super();
 		}
@@ -52,15 +54,16 @@ package nemostein.framework.dragonfly
 			offsetMatrix = new Matrix();
 			offsetMatrix.translate(-1, -3);
 			
-			setFormat(_font, _size, _color);
+			setFormat(_font, _size, _color, _align);
 		}
 		
-		public function setFormat(font:String, size:Number, color:uint):void
+		public function setFormat(font:String, size:Number, color:uint, align:String = LEFT):void
 		{
 			_font = font;
 			_size = size;
 			_alpha = (color >> 24 & 0xff) / 0xff;
 			_color = color & 0xffffff;
+			_align = align;
 			
 			invalid = true;
 		}
@@ -138,7 +141,7 @@ package nemostein.framework.dragonfly
 		public function set font(value:String):void 
 		{
 			_font = value;
-			setFormat(value, _size, _color);
+			setFormat(value, _size, _color, _align);
 		}
 		
 		public function get size():Number 
@@ -149,7 +152,7 @@ package nemostein.framework.dragonfly
 		public function set size(value:Number):void 
 		{
 			_size = value;
-			setFormat(_font, value, _color);
+			setFormat(_font, value, _color, _align);
 		}
 		
 		public function get color():uint 
@@ -160,7 +163,18 @@ package nemostein.framework.dragonfly
 		public function set color(value:uint):void 
 		{
 			_color = value;
-			setFormat(_font, _size, value);
+			setFormat(_font, _size, value, _align);
+		}
+		
+		public function get align():String 
+		{
+			return _align;
+		}
+		
+		public function set align(value:String):void 
+		{
+			_align = value;
+			setFormat(_font, _size, _color, value);
 		}
 	}
 }
