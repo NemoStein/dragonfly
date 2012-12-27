@@ -88,14 +88,8 @@ package nemostein.framework.dragonfly
 		
 		protected function redraw():void 
 		{
-			if (!_text)
+			if (visible)
 			{
-				visible = false;
-			}
-			else
-			{
-				visible = true;
-				
 				var colorTransform:ColorTransform = new ColorTransform(1, 1, 1, _alpha);
 				
 				textField.defaultTextFormat = new TextFormat(_font, _size, _color);
