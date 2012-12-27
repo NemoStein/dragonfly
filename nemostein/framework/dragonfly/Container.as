@@ -65,16 +65,20 @@ package nemostein.framework.dragonfly
 		 */
 		public function remove(child:Container):void
 		{
-			var fromGame:Boolean = Boolean(game);
-			
-			child._parent = null;
-			child.removed();
-			if (fromGame)
+			var childIndex:int = _children.indexOf(child);
+			if (childIndex >= 0)
 			{
-				child.removedfromGame();
+				var fromGame:Boolean = Boolean(game);
+				
+				child._parent = null;
+				child.removed();
+				if (fromGame)
+				{
+					child.removedfromGame();
+				}
+				_children.splice(childIndex, 1);
+				--_childrenCount;
 			}
-			_children.splice(_children.indexOf(child), 1);
-			--_childrenCount;
 		}
 		
 		/**

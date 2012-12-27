@@ -21,7 +21,6 @@ package nemostein.framework.dragonfly
 		protected var textField:TextField;
 		protected var offsetMatrix:Matrix;
 		
-		private var _deferredAlignment:Boolean;
 		private var _deferredAlignmentVertical:String;
 		private var _deferredAlignmentHorizontal:String;
 		private var _deferredAlignmentTo:Point;
@@ -31,15 +30,13 @@ package nemostein.framework.dragonfly
 		private var _size:Number;
 		private var _color:uint;
 		private var _alpha:Number;
-		private var _align:String;
 		
-		public function Text(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff, align:String = LEFT)
+		public function Text(string:String = "", font:String = "Lead III", size:Number = 8, color:uint = 0xffffffff)
 		{
 			_text = string;
 			_font = font;
 			_size = size;
 			_color = color;
-			_align = align;
 			
 			super();
 		}
@@ -55,23 +52,21 @@ package nemostein.framework.dragonfly
 			offsetMatrix = new Matrix();
 			offsetMatrix.translate(-1, -3);
 			
-			setFormat(_font, _size, _color, _align);
+			setFormat(_font, _size, _color);
 		}
 		
-		public function setFormat(font:String, size:Number, color:uint, align:String = LEFT):void
+		public function setFormat(font:String, size:Number, color:uint):void
 		{
 			_font = font;
 			_size = size;
 			_alpha = (color >> 24 & 0xff) / 0xff;
 			_color = color & 0xffffff;
-			_align = align;
 			
 			invalid = true;
 		}
 		
 		override public function alignAnchor(vertical:String, horizontal:String, to:Point = null):void 
 		{
-			_deferredAlignment = true;
 			_deferredAlignmentVertical = vertical;
 			_deferredAlignmentHorizontal = horizontal;
 			_deferredAlignmentTo = to;
@@ -83,13 +78,6 @@ package nemostein.framework.dragonfly
 			{
 				invalid = false;
 				redraw();
-			}
-			
-			if (_deferredAlignment)
-			{
-				super.alignAnchor(_deferredAlignmentVertical, _deferredAlignmentHorizontal, _deferredAlignmentTo);
-				
-				_deferredAlignment = false;
 			}
 			
 			super.update();
@@ -107,7 +95,7 @@ package nemostein.framework.dragonfly
 				
 				var colorTransform:ColorTransform = new ColorTransform(1, 1, 1, _alpha);
 				
-				textField.defaultTextFormat = new TextFormat(_font, _size, _color, null, null, null, null, null, _align);
+				textField.defaultTextFormat = new TextFormat(_font, _size, _color);
 				textField.text = _text;
 				
 				var fieldWidth:Number = textField.textWidth;
@@ -126,6 +114,8 @@ package nemostein.framework.dragonfly
 					sprite.fillRect(frame, 0);
 					sprite.draw(textField, offsetMatrix, colorTransform);
 				}
+				
+				super.alignAnchor(_deferredAlignmentVertical, _deferredAlignmentHorizontal, _deferredAlignmentTo);
 			}
 		}
 		
@@ -148,7 +138,7 @@ package nemostein.framework.dragonfly
 		public function set font(value:String):void 
 		{
 			_font = value;
-			setFormat(value, _size, _color, _align);
+			setFormat(value, _size, _color);
 		}
 		
 		public function get size():Number 
@@ -159,7 +149,7 @@ package nemostein.framework.dragonfly
 		public function set size(value:Number):void 
 		{
 			_size = value;
-			setFormat(_font, value, _color, _align);
+			setFormat(_font, value, _color);
 		}
 		
 		public function get color():uint 
@@ -170,18 +160,7 @@ package nemostein.framework.dragonfly
 		public function set color(value:uint):void 
 		{
 			_color = value;
-			setFormat(_font, _size, value, _align);
-		}
-		
-		public function get align():String 
-		{
-			return _align;
-		}
-		
-		public function set align(value:String):void 
-		{
-			_align = value;
-			setFormat(_font, _size, _color, value);
+			setFormat(_font, _size, value);
 		}
 	}
 }
