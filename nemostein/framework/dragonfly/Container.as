@@ -257,17 +257,14 @@ package nemostein.framework.dragonfly
 		 * Calling super at the start of the override will cause the children to be updated before after the current object
 		 * This can have undesired effects (e.g.: the child can access old and invalid data of the current object)
 		 */
-		protected function update():void 
+		protected function update():void
 		{
-			if (active)
+			for (var i:int = 0; i < _childrenCount; ++i)
 			{
-				for (var i:int = 0; i < _childrenCount; ++i)
+				var child:Container = _children[i];
+				if (child.active)
 				{
-					var child:Container = _children[i];
-					if (child.active)
-					{
-						child.update();
-					}
+					child.update();
 				}
 			}
 		}
@@ -279,17 +276,14 @@ package nemostein.framework.dragonfly
 		 * Calling super at the start of the override will cause the children to be draw below the current object
 		 * This can have undesired effects (e.g.: the child can be hidden below the current object)
 		 */
-		protected function render():void 
+		protected function render():void
 		{
-			if(visible)
+			for (var i:int = 0; i < _childrenCount; ++i)
 			{
-				for (var i:int = 0; i < _childrenCount; ++i)
+				var child:Container = _children[i];
+				if (child.visible)
 				{
-					var child:Container = _children[i];
-					if (child.visible)
-					{
-						child.render();
-					}
+					child.render();
 				}
 			}
 		}
