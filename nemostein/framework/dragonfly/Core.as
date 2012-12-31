@@ -56,29 +56,8 @@ package nemostein.framework.dragonfly
 		 */
 		public var id:String;
 		
-		/**
-		 * [read-only] Tells if the object is active (and can be updated) or not
-		 */
-		public var active:Boolean;
-		
-		/**
-		 * [read-only] Tells if the object is visible (and can be rendered) or not
-		 */
-		public var visible:Boolean;
-		
 		public function Core()
 		{
-			create();
-		}
-		
-		/**
-		 * Creates the Core object with essential values
-		 */
-		private function create():void
-		{
-			active = true;
-			visible = true;
-			
 			initialize();
 		}
 		
@@ -90,68 +69,6 @@ package nemostein.framework.dragonfly
 		protected function initialize():void
 		{
 		
-		}
-		
-		/**
-		 * Activate the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function activate():void
-		{
-			active = true;
-		}
-		
-		/**
-		 * Deactivate the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function deactivate():void
-		{
-			active = false;
-		}
-		
-		/**
-		 * Shows the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function show():void
-		{
-			visible = true;
-		}
-		
-		/**
-		 * Hides the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function hide():void
-		{
-			visible = false;
-		}
-		
-		/**
-		 * Calls hide() and deactivate() in the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function die():void
-		{
-			hide();
-			deactivate();
-		}
-		
-		/**
-		 * Calls show() and activate() in the current object
-		 *
-		 * note: always call super when overriding
-		 */
-		public function revive():void
-		{
-			show();
-			activate();
 		}
 	}
 }

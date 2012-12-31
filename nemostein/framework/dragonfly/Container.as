@@ -10,9 +10,22 @@ package nemostein.framework.dragonfly
 		private var _children:Vector.<Container>; // TODO: Use a linked list
 		private var _childrenCount:int;
 		
+		/**
+		 * [read-only] Tells if the object is active (and can be updated) or not
+		 */
+		public var active:Boolean;
+		
+		/**
+		 * [read-only] Tells if the object is visible (and can be rendered) or not
+		 */
+		public var visible:Boolean;
+		
 		override protected function initialize():void
 		{
 			super.initialize();
+			
+			active = true;
+			visible = true;
 			
 			_children = new <Container>[];
 		}
@@ -176,6 +189,68 @@ package nemostein.framework.dragonfly
 		}
 		
 		/**
+		 * Activate the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function activate():void
+		{
+			active = true;
+		}
+		
+		/**
+		 * Deactivate the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function deactivate():void
+		{
+			active = false;
+		}
+		
+		/**
+		 * Shows the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function show():void
+		{
+			visible = true;
+		}
+		
+		/**
+		 * Hides the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function hide():void
+		{
+			visible = false;
+		}
+		
+		/**
+		 * Calls hide() and deactivate() in the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function die():void
+		{
+			hide();
+			deactivate();
+		}
+		
+		/**
+		 * Calls show() and activate() in the current object
+		 *
+		 * note: always call super when overriding
+		 */
+		public function revive():void
+		{
+			show();
+			activate();
+		}
+		
+		/**
 		 * Update the current object and calls the update method in each children
 		 *
 		 * note: always call super when overriding
@@ -184,12 +259,15 @@ package nemostein.framework.dragonfly
 		 */
 		protected function update():void 
 		{
-			for (var i:int = 0; i < _childrenCount; ++i)
+			if (active)
 			{
-				var child:Container = _children[i];
-				if (child.active)
+				for (var i:int = 0; i < _childrenCount; ++i)
 				{
-					child.update();
+					var child:Container = _children[i];
+					if (child.active)
+					{
+						child.update();
+					}
 				}
 			}
 		}
@@ -203,12 +281,15 @@ package nemostein.framework.dragonfly
 		 */
 		protected function render():void 
 		{
-			for (var i:int = 0; i < _childrenCount; ++i)
+			if(visible)
 			{
-				var child:Container = _children[i];
-				if (child.visible)
+				for (var i:int = 0; i < _childrenCount; ++i)
 				{
-					child.render();
+					var child:Container = _children[i];
+					if (child.visible)
+					{
+						child.render();
+					}
 				}
 			}
 		}
