@@ -4,6 +4,7 @@ package nemostein.framework.dragonfly
 	public class Animation
 	{
 		private var _animated:Entity;
+		private var _ended:Boolean;
 		
 		public var id:String;
 		public var frames:Array;
@@ -44,18 +45,23 @@ package nemostein.framework.dragonfly
 			if (resetTime)
 			{
 				keyframeTime = 0;
+				_ended = false;
 			}
+			
+			var cycle:Boolean = false;
 			
 			if (loop)
 			{
 				while (index >= length)
 				{
-					index -= length;
+					index = 0;
+					cycle = true;
 				}
 				
 				while (index < 0)
 				{
 					index += length;
+					cycle = true;
 				}
 			}
 			else
@@ -63,34 +69,45 @@ package nemostein.framework.dragonfly
 				if (index >= length)
 				{
 					index = length - 1;
+					cycle = true;
 				}
 				else if (index < 0)
 				{
 					index = 0;
+					cycle = true;
 				}
 			}
 			
-			if (index != keyframe)
+			if (index != keyframe || cycle || resetTime)
 			{
-				keyframe = index;
+				if(loop || !cycle)
+				{
+					keyframe = index;
+					_animated.moveSpriteToFrame(frames[index]);
+				}
+				else
+				{
+					_ended = true;
+				}
 				
 				if (callback != null)
 				{
-					callback(this, index);
+					callback(this, index, cycle);
 				}
-				
-				_animated.moveSpriteToFrame(frames[index]);
 			}
 		}
 		
 		public function update(time:Number):void
 		{
-			keyframeTime += time;
-			
-			if (keyframeTime >= delay)
+			if (!_ended)
 			{
-				keyframeTime -= delay;
-				goToFrame(keyframe + (reverse ? -1 : 1));
+				keyframeTime += time;
+				
+				if (keyframeTime >= delay)
+				{
+					keyframeTime -= delay;
+					goToFrame(keyframe + (reverse ? -1 : 1));
+				}
 			}
 		}
 		

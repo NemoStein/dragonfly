@@ -135,7 +135,7 @@ package nemostein.framework.dragonfly
 		 * @param	frames
 		 * @param	frameRate
 		 * @param	loop
-		 * @param	callback	function(animation:Animation, keyframe:int):void
+		 * @param	callback	function(animation:Animation, keyframe:int, cycle:Boolean):void
 		 * @return
 		 */
 		public function addAnimation(id:String, frames:Array, frameRate:Number, loop:Boolean = true, callback:Function = null):Animation
@@ -173,11 +173,10 @@ package nemostein.framework.dragonfly
 			{
 				if (reset)
 				{
-					animation.goToFrame(0, true);
+					animation.goToFrame(!reverse ? 0 : animation.length - 1, true);
 				}
 				
 				animation.reverse = reverse;
-				
 				this.animation = animation;
 			}
 		}
