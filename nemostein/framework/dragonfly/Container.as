@@ -259,12 +259,15 @@ package nemostein.framework.dragonfly
 		 */
 		protected function update():void 
 		{
-			for (var i:int = 0; i < _childrenCount; ++i)
+			if (active)
 			{
-				var child:Container = _children[i];
-				if (child.active)
+				for (var i:int = 0; i < _childrenCount; ++i)
 				{
-					child.update();
+					var child:Container = _children[i];
+					if (child.active)
+					{
+						child.update();
+					}
 				}
 			}
 		}
@@ -278,12 +281,15 @@ package nemostein.framework.dragonfly
 		 */
 		protected function render():void 
 		{
-			for (var i:int = 0; i < _childrenCount; ++i)
+			if(visible)
 			{
-				var child:Container = _children[i];
-				if (child.visible)
+				for (var i:int = 0; i < _childrenCount; ++i)
 				{
-					child.render();
+					var child:Container = _children[i];
+					if (child.visible)
+					{
+						child.render();
+					}
 				}
 			}
 		}
