@@ -1,5 +1,6 @@
 package nemostein.framework.dragonfly
 {
+	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	import nemostein.utils.ErrorUtils;
 	
 	public class Bar extends Entity
@@ -60,27 +61,27 @@ package nemostein.framework.dragonfly
 			}
 		}
 		
-		protected function getLength():Number 
+		protected function getLength():Number
 		{
 			throw ErrorUtils.abstractMethod(this, "Bar", "getLength");
 		}
 		
-		override public function get x():Number 
+		override public function get x():Number
 		{
 			return _x;
 		}
 		
-		override public function set x(value:Number):void 
+		override public function set x(value:Number):void
 		{
 			_x = value;
 		}
 		
-		override public function get y():Number 
+		override public function get y():Number
 		{
 			return _y;
 		}
 		
-		override public function set y(value:Number):void 
+		override public function set y(value:Number):void
 		{
 			_y = value;
 		}

@@ -11,9 +11,12 @@ package nemostein.framework.dragonfly
 	import flash.system.System;
 	import flash.ui.Mouse;
 	import flash.utils.getTimer;
-	import nemostein.framework.dragonfly.io.MouseAware;
-	import nemostein.framework.dragonfly.io.Input;
-	import nemostein.framework.dragonfly.plugins.shadowedtext.ShadowedText;
+	import nemostein.framework.dragonfly.modules.container.Container;
+	import nemostein.framework.dragonfly.modules.container.entity.Entity;
+	import nemostein.framework.dragonfly.modules.io.Input;
+	import nemostein.framework.dragonfly.modules.io.MouseAware;
+	import nemostein.framework.dragonfly.modules.text.ShadowedText;
+	import nemostein.framework.dragonfly.modules.text.Text;
 	
 	public class Game extends Container
 	{

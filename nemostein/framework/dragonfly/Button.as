@@ -2,7 +2,7 @@ package nemostein.framework.dragonfly
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import nemostein.framework.dragonfly.Entity;
+	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	import nemostein.io.Keys;
 	import nemostein.utils.MathUtils;
 	

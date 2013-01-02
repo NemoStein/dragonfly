@@ -2,7 +2,7 @@ package nemostein.framework.dragonfly
 {
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
-	import nemostein.framework.dragonfly.io.Input;
+	import nemostein.framework.dragonfly.modules.io.Input;
 	
 	/**
 	 * The highest (and most abstract) class that can be used in the framework
