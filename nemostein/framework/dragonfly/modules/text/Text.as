@@ -80,7 +80,6 @@ package nemostein.framework.dragonfly.modules.text
 		{
 			if (invalid)
 			{
-				invalid = false;
 				redraw();
 			}
 			
@@ -91,6 +90,8 @@ package nemostein.framework.dragonfly.modules.text
 		{
 			if (visible)
 			{
+				invalid = false;
+				
 				var colorTransform:ColorTransform = new ColorTransform(1, 1, 1, _alpha);
 				
 				textField.defaultTextFormat = new TextFormat(_font, _size, _color);
