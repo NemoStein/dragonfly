@@ -44,23 +44,14 @@ package nemostein.framework.dragonfly.modules.text
 			invalid = true;
 		}
 		
-		override protected function update():void
-		{
-			if (invalid)
-			{
-				invalid = false;
-				redraw();
-			}
-			
-			super.update();
-		}
-		
 		override protected function redraw():void 
 		{
 			super.redraw();
 			
 			if (visible)
 			{
+				invalid = false;
+				
 				var colorTransform:ColorTransform = _shadowTextField.transform.colorTransform;
 				colorTransform.alphaMultiplier = _shadowAlpha;
 				
