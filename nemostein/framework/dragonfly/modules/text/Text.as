@@ -92,29 +92,38 @@ package nemostein.framework.dragonfly.modules.text
 			{
 				invalid = false;
 				
-				var colorTransform:ColorTransform = new ColorTransform(1, 1, 1, _alpha);
-				
-				textField.defaultTextFormat = new TextFormat(_font, _size, _color);
-				textField.text = _text;
-				
-				var fieldWidth:Number = textField.textWidth;
-				var fieldHeight:Number = textField.textHeight - 1;
-				
-				if (fieldWidth != frame.width || fieldHeight != frame.height)
+				if (_text && _text.length > 0)
 				{
-					sprite && sprite.dispose();
+					var colorTransform:ColorTransform = new ColorTransform(1, 1, 1, _alpha);
 					
-					frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
-					sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
-					sprite.draw(textField, offsetMatrix, colorTransform);
+					textField.defaultTextFormat = new TextFormat(_font, _size, _color);
+					textField.text = _text;
+					
+					var fieldWidth:Number = textField.textWidth;
+					var fieldHeight:Number = textField.textHeight - 1;
+					
+					if(fieldWidth > 0 && fieldHeight > 0)
+					{
+						if (fieldWidth != frame.width || fieldHeight != frame.height)
+						{
+							if (sprite)
+							{
+								sprite.dispose();
+							}
+							
+							frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
+							sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
+							sprite.draw(textField, offsetMatrix, colorTransform);
+						}
+						else
+						{
+							sprite.fillRect(frame, 0);
+							sprite.draw(textField, offsetMatrix, colorTransform);
+						}
+					}
+					
+					super.alignAnchor(_deferredAlignmentVertical, _deferredAlignmentHorizontal, _deferredAlignmentTo);
 				}
-				else
-				{
-					sprite.fillRect(frame, 0);
-					sprite.draw(textField, offsetMatrix, colorTransform);
-				}
-				
-				super.alignAnchor(_deferredAlignmentVertical, _deferredAlignmentHorizontal, _deferredAlignmentTo);
 			}
 		}
 		

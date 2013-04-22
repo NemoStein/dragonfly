@@ -89,20 +89,26 @@ package nemostein.framework.dragonfly.modules.text
 				var fieldWidth:Number = absoluteShadowOffsetX + textField.textWidth;
 				var fieldHeight:Number = absoluteShadowOffsetY + textField.textHeight - 1;
 				
-				if (fieldWidth != frame.width || fieldHeight != frame.height)
+				if(fieldWidth > 0 && fieldHeight > 0)
 				{
-					sprite && sprite.dispose();
-					
-					frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
-					sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
-					sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
-					sprite.draw(textField, textOffsetMatrix);
-				}
-				else
-				{
-					sprite.fillRect(frame, 0);
-					sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
-					sprite.draw(textField, textOffsetMatrix);
+					if (fieldWidth != frame.width || fieldHeight != frame.height)
+					{
+						if (sprite)
+						{
+							sprite.dispose();
+						}
+						
+						frame = new Rectangle(0, 0, fieldWidth, fieldHeight);
+						sprite = new BitmapData(fieldWidth, fieldHeight, true, 0);
+						sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
+						sprite.draw(textField, textOffsetMatrix);
+					}
+					else
+					{
+						sprite.fillRect(frame, 0);
+						sprite.draw(_shadowTextField, shadowOffsetMatrix, _shadowTextField.transform.colorTransform);
+						sprite.draw(textField, textOffsetMatrix);
+					}
 				}
 			}
 		}

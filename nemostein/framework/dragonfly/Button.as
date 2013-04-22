@@ -33,7 +33,7 @@ package nemostein.framework.dragonfly
 		{
 			super.initialize();
 			
-			_relativeHitArea = new Vector.<Point>();
+			_relativeHitArea = new <Point>[];
 		}
 		
 		protected function drawHitArea(... vertices:Array):void
@@ -84,7 +84,20 @@ package nemostein.framework.dragonfly
 			
 			if (onPress)
 			{
-				onPress(point);
+				switch (onPress.length)
+				{
+					case 0:
+					{
+						onPress();
+						break;
+					}
+					
+					case 1:
+					{
+						onPress(point);
+						break;
+					}
+				}
 			}
 		}
 		
@@ -94,7 +107,20 @@ package nemostein.framework.dragonfly
 			
 			if (onRelease)
 			{
-				onRelease(point);
+				switch (onRelease.length)
+				{
+					case 0:
+					{
+						onRelease();
+						break;
+					}
+					
+					case 1:
+					{
+						onRelease(point);
+						break;
+					}
+				}
 			}
 		}
 		
@@ -102,7 +128,20 @@ package nemostein.framework.dragonfly
 		{
 			if (onExecute)
 			{
-				onExecute(point);
+				switch (onExecute.length)
+				{
+					case 0:
+					{
+						onExecute();
+						break;
+					}
+					
+					case 1:
+					{
+						onExecute(point);
+						break;
+					}
+				}
 			}
 		}
 		
@@ -112,7 +151,20 @@ package nemostein.framework.dragonfly
 			
 			if (onEnter)
 			{
-				onEnter(point);
+				switch (onEnter.length)
+				{
+					case 0:
+					{
+						onEnter();
+						break;
+					}
+					
+					case 1:
+					{
+						onEnter(point);
+						break;
+					}
+				}
 			}
 		}
 		
@@ -122,7 +174,20 @@ package nemostein.framework.dragonfly
 			
 			if (onLeave)
 			{
-				onLeave(point);
+				switch (onLeave.length)
+				{
+					case 0:
+					{
+						onLeave();
+						break;
+					}
+					
+					case 1:
+					{
+						onLeave(point);
+						break;
+					}
+				}
 			}
 		}
 		

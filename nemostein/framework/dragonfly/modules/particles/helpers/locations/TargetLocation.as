@@ -2,7 +2,7 @@ package nemostein.framework.dragonfly.modules.particles.helpers.locations
 {
 	import nemostein.framework.dragonfly.Core;
 	import nemostein.framework.dragonfly.Entity;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Location;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Location;
 	
 	public class TargetLocation implements Location
 	{
