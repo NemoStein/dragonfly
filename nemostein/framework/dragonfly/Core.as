@@ -38,7 +38,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * [read-only] The camera
 		 */
-		static protected var camera:Rectangle;
+		static public var camera:Rectangle;
 		
 		/**
 		 * [read-only] The bounds of the camera
@@ -68,7 +68,7 @@ package nemostein.framework.dragonfly
 		 */
 		protected function initialize():void
 		{
-		
+			
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package nemostein.framework.dragonfly.modules.particles.helpers.numerics
 {
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Numeric;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Numeric;
 	
 	public class NumericValue implements Numeric
 	{

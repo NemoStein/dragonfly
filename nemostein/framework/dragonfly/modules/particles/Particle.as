@@ -1,10 +1,8 @@
 package nemostein.framework.dragonfly.modules.particles
 {
-	import flash.display.BitmapData;
-	import nemostein.framework.dragonfly.AnchorAlign;
-	import nemostein.framework.dragonfly.Core;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Force;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Test;
+	import nemostein.framework.dragonfly.modules.container.entity.AnchorAlign;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Force;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Test;
 	
 	public class Particle extends ParticlePool
 	{
@@ -28,12 +26,13 @@ package nemostein.framework.dragonfly.modules.particles
 			super();
 		}
 		
-		public function configure(emitter:Emitter):void 
+		public function configure(emitter:Emitter):void
 		{
 			this.emitter = emitter;
 			
 			revive();
 			
+			// TODO: Add animation to the particles
 			draw(emitter.particleGraphic.data);
 			alignAnchor(AnchorAlign.CENTER, AnchorAlign.CENTER);
 			
@@ -57,7 +56,7 @@ package nemostein.framework.dragonfly.modules.particles
 			age = 0;
 		}
 		
-		override protected function update():void 
+		override protected function update():void
 		{
 			age += time;
 			
@@ -67,14 +66,14 @@ package nemostein.framework.dragonfly.modules.particles
 			var i:int;
 			
 			var forcesCount:int = forces.length;
-			for (i = 0; i < forcesCount; ++i) 
+			for (i = 0; i < forcesCount; ++i)
 			{
 				var force:Force = forces[i];
 				force.apply(this);
 			}
 			
 			var testsCount:int = tests.length;
-			for (i = 0; i < testsCount; ++i) 
+			for (i = 0; i < testsCount; ++i)
 			{
 				var test:Test = tests[i];
 				test.evaluate(this);
@@ -103,14 +102,14 @@ package nemostein.framework.dragonfly.modules.particles
 			super.update();
 		}
 		
-		override public function die():void 
+		override public function die():void
 		{
 			keep(this);
 			
 			super.die();
 		}
 		
-		public function get delay():Number 
+		public function get delay():Number
 		{
 			return time;
 		}

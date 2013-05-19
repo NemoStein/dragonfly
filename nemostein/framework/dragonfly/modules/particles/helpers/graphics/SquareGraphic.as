@@ -1,7 +1,7 @@
 package nemostein.framework.dragonfly.modules.particles.helpers.graphics
 {
 	import flash.display.BitmapData;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Graphic;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Graphic;
 	
 	public class SquareGraphic implements Graphic
 	{

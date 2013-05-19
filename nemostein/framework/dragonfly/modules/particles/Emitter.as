@@ -1,11 +1,10 @@
 package nemostein.framework.dragonfly.modules.particles
 {
-	import nemostein.framework.dragonfly.Core;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Force;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Graphic;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Location;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Numeric;
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Test;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Force;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Graphic;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Location;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Numeric;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Test;
 	
 	public class Emitter extends ParticlePool
 	{

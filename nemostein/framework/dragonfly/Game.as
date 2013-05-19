@@ -40,7 +40,7 @@ package nemostein.framework.dragonfly
 		private var _width:int;
 		private var _height:int;
 		private var _color:uint;
-		private var _zoom:Number;
+		private var _zoom:uint;
 		private var _redrawArea:Rectangle;
 		
 		private var _contents:Container;
@@ -48,7 +48,7 @@ package nemostein.framework.dragonfly
 		private var _defaultCursor:Boolean;
 		private var _following:Entity;
 		
-		public function Game(width:int, height:int, color:uint = 0xffdadfef, zoom:Number = 1)
+		public function Game(width:int, height:int, color:uint = 0xffdadfef, zoom:uint = 1)
 		{
 			_width = width;
 			_height = height;
@@ -359,6 +359,21 @@ package nemostein.framework.dragonfly
 			propagateMouseSignal(this, key, mouse, false);
 		}
 		
+		public function setGameSize(width:int, height:int):void
+		{
+			_width = width;
+			_height = height;
+			
+			_redrawArea.width = width;
+			_redrawArea.height = height;
+			
+			camera.width = width;
+			camera.height = height;
+			
+			canvas = new BitmapData(width, height, true, 0);
+			_display.bitmapData = canvas;
+		}
+		
 		private function propagateMouseSignal(entity:Container, key:int, mouse:Point, down:Boolean):Boolean
 		{
 			var chain:Boolean = true;
@@ -393,6 +408,17 @@ package nemostein.framework.dragonfly
 			return chain;
 		}
 		
+		public function get zoom():uint 
+		{
+			return _zoom;
+		}
+		
+		public function set zoom(value:uint):void 
+		{
+			_zoom = value;
+			_display.scaleX = _display.scaleY = _zoom;
+		}
+		
 		public function get gameBounds():Rectangle
 		{
 			return bounds.clone();
@@ -401,6 +427,16 @@ package nemostein.framework.dragonfly
 		public function get cursor():Entity 
 		{
 			return _cursor;
+		}
+		
+		public function get width():int 
+		{
+			return _width;
+		}
+		
+		public function get height():int 
+		{
+			return _height;
 		}
 	}
 }

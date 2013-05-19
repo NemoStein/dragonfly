@@ -116,5 +116,18 @@ package nemostein.framework.dragonfly.modules.container.entity
 			frameRate = value;
 			delay = 1 / frameRate;
 		}
+		
+		public function play(reset:Boolean = true, reverse:Boolean = false):void
+		{
+			_animated.playAnimation(id, reset, reverse);
+		}
+		
+		public function stop():void
+		{
+			if (_animated.animation == this)
+			{
+				_animated.stopAnimation();
+			}
+		}
 	}
 }

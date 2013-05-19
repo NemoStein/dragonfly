@@ -1,7 +1,7 @@
 package  nemostein.framework.dragonfly.modules.particles.helpers.forces
 {
-	import nemostein.framework.dragonfly.plugins.particles.helpers.Force;
-	import nemostein.framework.dragonfly.plugins.particles.Particle;
+	import nemostein.framework.dragonfly.modules.particles.helpers.Force;
+	import nemostein.framework.dragonfly.modules.particles.Particle;
 	
 	public class AccelerationForce implements Force 
 	{

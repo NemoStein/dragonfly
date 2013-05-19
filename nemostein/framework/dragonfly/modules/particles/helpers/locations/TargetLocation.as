@@ -1,7 +1,6 @@
 package nemostein.framework.dragonfly.modules.particles.helpers.locations
 {
-	import nemostein.framework.dragonfly.Core;
-	import nemostein.framework.dragonfly.Entity;
+	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	import nemostein.framework.dragonfly.modules.particles.helpers.Location;
 	
 	public class TargetLocation implements Location

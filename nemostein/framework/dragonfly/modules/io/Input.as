@@ -1,7 +1,6 @@
 package nemostein.framework.dragonfly.modules.io
 {
 	import flash.display.Stage;
-	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;

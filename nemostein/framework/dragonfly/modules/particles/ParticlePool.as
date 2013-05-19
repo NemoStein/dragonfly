@@ -1,8 +1,6 @@
 package nemostein.framework.dragonfly.modules.particles
 {
-	import flash.display.BitmapData;
-	import flash.utils.Dictionary;
-	import nemostein.framework.dragonfly.Entity;
+	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	
 	internal class ParticlePool extends Entity
 	{
@@ -25,7 +23,7 @@ package nemostein.framework.dragonfly.modules.particles
 		{
 			var particle:Particle;
 			
-			if(pooled)
+			if (pooled)
 			{
 				particle = pool.pop();
 				particle.configure(emitter);

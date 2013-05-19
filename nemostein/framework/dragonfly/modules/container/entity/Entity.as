@@ -19,6 +19,16 @@ package nemostein.framework.dragonfly.modules.container.entity
 		protected var frame:Rectangle;
 		
 		/**
+		 * The number of collumns of the current object
+		 */
+		protected var spriteCols:int;
+		
+		/**
+		 * The number of rows of the current object
+		 */
+		protected var spriteRows:int;
+		
+		/**
 		 * The anchor point (offset) of the current object
 		 */
 		protected var anchor:Point;
@@ -119,6 +129,9 @@ package nemostein.framework.dragonfly.modules.container.entity
 			{
 				height = entityHeight;
 			}
+			
+			spriteCols = data.width / entityWidth;
+			spriteRows = data.height / entityHeight;
 		}
 		
 		/**
@@ -197,13 +210,12 @@ package nemostein.framework.dragonfly.modules.container.entity
 		{
 			_currentFrame = index;
 			
+			frame.x = index % spriteCols * frame.width;
+			frame.y = int(index / spriteCols) * frame.height;
+			
 			if (_flipped)
 			{
-				frame.x = sprite.width - (index + 1) * frame.width;
-			}
-			else
-			{
-				frame.x = index * frame.width;
+				frame.x = sprite.width - frame.width - frame.x;
 			}
 		}
 		

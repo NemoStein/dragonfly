@@ -1,6 +1,6 @@
 package nemostein.framework.dragonfly.modules.particles.helpers
 {
-	import nemostein.framework.dragonfly.plugins.particles.Particle;
+	import nemostein.framework.dragonfly.modules.particles.Particle;
 	
 	public interface Force
 	{
