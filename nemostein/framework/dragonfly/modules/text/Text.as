@@ -49,6 +49,7 @@ package nemostein.framework.dragonfly.modules.text
 			super.initialize();
 			
 			textField = new TextField();
+			textField.embedFonts = true;
 			textField.cacheAsBitmap = true;
 			textField.autoSize = TextFieldAutoSize.LEFT;
 			

@@ -9,12 +9,14 @@ package nemostein.framework.dragonfly
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.System;
+	import flash.text.Font;
 	import flash.ui.Mouse;
 	import flash.utils.getTimer;
 	import nemostein.framework.dragonfly.modules.container.Container;
 	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	import nemostein.framework.dragonfly.modules.io.Input;
 	import nemostein.framework.dragonfly.modules.io.MouseAware;
+	import nemostein.framework.dragonfly.modules.text.LeadIII;
 	import nemostein.framework.dragonfly.modules.text.ShadowedText;
 	import nemostein.framework.dragonfly.modules.text.Text;
 	
@@ -61,6 +63,8 @@ package nemostein.framework.dragonfly
 		override protected function initialize():void
 		{
 			super.initialize();
+			
+			registerFont(LeadIII);
 			
 			_contents = new Container();
 			super.add(_contents);
@@ -261,6 +265,11 @@ package nemostein.framework.dragonfly
 				
 				stage.removeChild(_suspensionScreen);
 			}
+		}
+		
+		public function registerFont(FontClass:Class):void 
+		{
+			Font.registerFont(FontClass);
 		}
 		
 		public function changeCursor(entity:Entity = null):void

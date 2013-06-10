@@ -410,10 +410,10 @@ package nemostein.framework.dragonfly.modules.container.entity
 			canvasPosition.x = position.x - anchor.x;
 			canvasPosition.y = position.y - anchor.y;
 			
-			if (relative && parent && parent is Entity)
+			var parentEntity:Entity = parent as Entity;
+			
+			if (relative && parentEntity)
 			{
-				var parentEntity:Entity = parent as Entity;
-				
 				canvasPosition.x += parentEntity.canvasPosition.x + parentEntity.anchor.x;
 				canvasPosition.y += parentEntity.canvasPosition.y + parentEntity.anchor.y;
 			}

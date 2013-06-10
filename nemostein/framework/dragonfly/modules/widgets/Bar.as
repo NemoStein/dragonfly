@@ -1,4 +1,4 @@
-package nemostein.framework.dragonfly
+package nemostein.framework.dragonfly.modules.widgets
 {
 	import nemostein.framework.dragonfly.modules.container.entity.Entity;
 	import nemostein.utils.ErrorUtils;

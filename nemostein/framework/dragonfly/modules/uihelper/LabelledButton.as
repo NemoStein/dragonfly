@@ -1,7 +1,7 @@
 package nemostein.framework.dragonfly.modules.uihelper 
 {
-	import nemostein.framework.dragonfly.Button;
 	import nemostein.framework.dragonfly.modules.text.Text;
+	import nemostein.framework.dragonfly.modules.widgets.Button;
 	
 	public class LabelledButton extends Button 
 	{
