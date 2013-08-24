@@ -16,6 +16,7 @@ package nemostein.framework.dragonfly.modules.container.entity
 			
 			_alpha = 1;
 			_zero = new Point();
+			_invalid = true;
 		}
 		
 		override protected function render():void
@@ -23,7 +24,8 @@ package nemostein.framework.dragonfly.modules.container.entity
 			if (_invalid)
 			{
 				_invalid = false;
-				_alphaBitmapData = new BitmapData(frame.width, frame.height, true, (0xff * _alpha) << 24);
+				_alphaBitmapData.fillRect(_alphaBitmapData.rect, (0xff * _alpha) << 24);
+				//_alphaBitmapData = new BitmapData(frame.width, frame.height, true, (0xff * _alpha) << 24);
 			}
 			
 			super.render();
