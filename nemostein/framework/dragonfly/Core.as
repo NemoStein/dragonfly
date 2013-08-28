@@ -2,7 +2,7 @@ package nemostein.framework.dragonfly
 {
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
-	import nemostein.framework.dragonfly.modules.io.Input;
+	import nemostein.framework.dragonfly.modules.io.GameInput;
 	
 	/**
 	 * The highest (and most abstract) class that can be used in the framework
@@ -48,7 +48,7 @@ package nemostein.framework.dragonfly
 		/**
 		 * [read-only] The global input
 		 */
-		static protected var input:Input;
+		static protected var input:GameInput;
 		
 		/**
 		 * The id of the current object

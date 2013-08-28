@@ -5,6 +5,8 @@ package nemostein.framework.dragonfly
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
 	import flash.display.Stage;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -14,7 +16,7 @@ package nemostein.framework.dragonfly
 	import flash.utils.getTimer;
 	import nemostein.framework.dragonfly.modules.container.Container;
 	import nemostein.framework.dragonfly.modules.container.entity.Entity;
-	import nemostein.framework.dragonfly.modules.io.Input;
+	import nemostein.framework.dragonfly.modules.io.GameInput;
 	import nemostein.framework.dragonfly.modules.io.MouseAware;
 	import nemostein.framework.dragonfly.modules.text.LeadIII;
 	import nemostein.framework.dragonfly.modules.text.ShadowedText;
@@ -98,7 +100,10 @@ package nemostein.framework.dragonfly
 				Game.stage = stage;
 				_started = false;
 				
-				input = new Input(this);
+				stage.scaleMode = StageScaleMode.NO_SCALE;
+				stage.align = StageAlign.TOP_LEFT;
+				
+				input = new GameInput(this);
 				
 				stage.addEventListener(Event.ENTER_FRAME, onStageEnterFrame);
 				stage.addEventListener(Event.DEACTIVATE, onStageDeactivate);
